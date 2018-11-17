@@ -21,12 +21,14 @@ public class LoginDialog extends Dialog {
 	private static final String USERNAME_LABEL = "Username";
 	private static final String PASSWORD_LABEL = "Password";
 	private static final String LOGIN_LABEL = "Login";
+	private static final String REGISTRATION_LABEL = "Registration";
 
 	private JTextField usernameTextField;
 	private JPasswordField passwordTextField;
 	private JLabel usernameLabel;
 	private JLabel passwordLabel;
 	private JButton loginButton;
+	private JButton registerButton;
 
 	private JFrame parrent;
 	private KeyListener keyListener = new KeyListener() {
@@ -79,40 +81,39 @@ public class LoginDialog extends Dialog {
 		panel.add(passwordTextField, gbs);
 		panel.setBorder(new LineBorder(Color.GRAY));
 
-		loginButton = new JButton("Login");
+		loginButton = new JButton(LOGIN_LABEL);
+		gbs.gridx = 1;
+		gbs.gridy = 3;
+		gbs.gridwidth = 1;
+		panel.add(loginButton, gbs);
+
+		registerButton = new JButton(REGISTRATION_LABEL);
+		gbs.gridx = 3;
+		gbs.gridy = 3;
+		gbs.gridwidth = 1;
+		panel.add(registerButton, gbs);
+
+		panel.setBounds(0, 0, 400, 200);
+		setBounds(0, 0, 400, 200);
+		add(panel, BorderLayout.CENTER);
+
 		loginButton.addActionListener(e -> login());
 		loginButton.addKeyListener(keyListener);
 		usernameTextField.addKeyListener(keyListener);
 		passwordTextField.addKeyListener(keyListener);
-
-		JPanel buttonPanel = new JPanel(new GridBagLayout());
-		gbs.gridx = 0;
-		gbs.gridy = 0;
-		gbs.gridwidth = 1;
-		buttonPanel.add(loginButton, gbs);
-
-		JPanel finalPanel = new JPanel();
-
-		gbs.gridx = 0;
-		gbs.gridy = 0;
-		gbs.gridwidth = 1;
-		finalPanel.add(panel, gbs);
-
-		gbs.gridx = 0;
-		gbs.gridy = 1;
-		gbs.gridwidth = 1;
-		finalPanel.add(loginButton, gbs);
-
-		finalPanel.setBounds(0, 0, 400, 200);
-		setBounds(0, 0, 400, 200);
-		add(finalPanel, BorderLayout.CENTER);
-
+		registerButton.addActionListener(e -> register());
 		this.parrent.getRootPane().setDefaultButton(loginButton);
 
 		setTitle(LOGIN_LABEL);
 		pack();
 		setResizable(false);
 		setLocationRelativeTo(this.parrent);
+	}
+
+	public void register() {
+
+		RegistrationDialog registrationDialog = new RegistrationDialog(parrent);
+		registrationDialog.setVisible(true);
 	}
 
 	public void login() {

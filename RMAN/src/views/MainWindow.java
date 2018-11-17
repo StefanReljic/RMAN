@@ -21,7 +21,7 @@ public class MainWindow extends Dialog {
 
 		JScrollPane informationResourcesScrollPane = new JScrollPane();
 		JScrollPane informationResourceScrollPane = new JScrollPane();
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, informationResourceScrollPane, informationResourceScrollPane);
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, informationResourcesScrollPane, informationResourceScrollPane);
 
 	}
 
