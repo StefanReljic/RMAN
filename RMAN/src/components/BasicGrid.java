@@ -1,10 +1,13 @@
-package model;
+package components;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.JTable;
+
+import model.Item;
+import model.Row;
 
 public class BasicGrid extends AbstractGrid {
 
@@ -18,6 +21,8 @@ public class BasicGrid extends AbstractGrid {
 	@Override
 	public void setRows(List<Row> rows) {
 
+		if (rows == null)
+			return;
 		this.rows = rows;
 		setGridValues();
 	}

@@ -1,9 +1,11 @@
-package model;
+package components;
 
 import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JTable;
+
+import model.Row;
 
 public abstract class AbstractGrid extends JComponent{
 
