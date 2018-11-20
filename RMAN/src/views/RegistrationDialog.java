@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,7 +15,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import interfaces.ServiceInterface;
+import model.User;
 import services.OracleService;
+import services.UserService;
 
 /**
  * View for user registration.
@@ -36,6 +40,39 @@ public class RegistrationDialog extends Dialog {
 		super(parrent);
 
 		this.parrent = parrent;
+
+		addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+		});
+
 		usernameField = new JTextField(30);
 		passwordField = new JPasswordField(30);
 		confirmPasswordField = new JPasswordField(30);
@@ -102,16 +139,24 @@ public class RegistrationDialog extends Dialog {
 		String username = usernameField.getText();
 		String password = new String(passwordField.getPassword());
 		String confirmPassword = new String(confirmPasswordField.getPassword());
-
+		String firstname = "";
+		String lastname = "";
 		if (username == null || password == null || confirmPassword == null)
 			return;
 
 		if (!password.equals(confirmPassword))
 			return;
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(password);
+		user.setFirstname(firstname);
+		user.setLastname(lastname);
+		user.setRole_id(2);
 
 		// registration logic
-		ServiceInterface serviceInterface = new OracleService("stefan","stefan","host", 1521, "testdb");
-		
+		UserService userService = new UserService("rman", "rman", "localhost", 1521, "orcl");
+		userService.register(user);
+
 	}
 
 }

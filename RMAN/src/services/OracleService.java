@@ -205,6 +205,12 @@ public class OracleService extends AbstractService {
 	@Override
 	public Connection getConnection() {
 
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		Connection connection = null;
 		try {
 			connection = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":" + port + ":" + serviceId, user,

@@ -9,8 +9,8 @@ import model.User;
 
 public class UserService extends OracleService {
 
-	public static final String SQL_AUTHENTICATE = "select 1 from user where username = ? and password = ?";
-	public static final String SQL_REGISTER = "insert into user values (?, ?, ?, ?, ?)";
+	public static final String SQL_AUTHENTICATE = "select 1 from \"RMAN\".\"USER\" where username = ? and password = ?";
+	public static final String SQL_REGISTER = "insert into \"RMAN\".\"USER\" values (?, ?, ?, ?, ?)";
 
 	public UserService(String user, String password, String host, Integer port, String serviceId) {
 		super(user, password, host, port, serviceId);

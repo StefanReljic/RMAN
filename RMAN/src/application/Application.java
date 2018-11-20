@@ -1,6 +1,8 @@
 package application;
 
 import java.awt.EventQueue;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
@@ -20,7 +22,14 @@ public class Application {
 			public void run() {
 				try {
 					Application window = new Application();
-					window.frmRman.setVisible(true);
+					window.frmRman.setVisible(false);
+					
+					JFrame frame = new JFrame("Login");
+				
+					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+					LoginDialog dialog = new LoginDialog(frame);
+					dialog.setVisible(true);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -45,10 +54,8 @@ public class Application {
 		frmRman.setBounds(100, 100, 366, 231);
 		frmRman.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmRman.getContentPane().setLayout(new CardLayout(0, 0));
-		frmRman.setVisible(false);
-
-		LoginDialog dialog = new LoginDialog(frmRman);
-		dialog.setVisible(true);
+		
+	
 
 	}
 }

@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,6 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+
+import interfaces.ServiceInterface;
+import model.User;
+import services.UserService;
 
 public class LoginDialog extends Dialog {
 
@@ -43,8 +49,10 @@ public class LoginDialog extends Dialog {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_ENTER)
+
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				login();
+			}
 		}
 	};
 
@@ -52,6 +60,38 @@ public class LoginDialog extends Dialog {
 		super(parrent);
 
 		this.parrent = parrent;
+		addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+		});
+
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbs = new GridBagConstraints();
 
@@ -129,10 +169,18 @@ public class LoginDialog extends Dialog {
 			return;
 		}
 
-		// add login logic
-
-		dispose();
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(password);
+		UserService userService = new UserService("rman", "rman", "localhost", 1521, "orcl");
+		boolean success = userService.authenticate(user);
+		
+		if(success) {
+			MainWindow main = new MainWindow(parrent);
+			main.setVisible(true);
+		}
 		parrent.setVisible(true);
+		return;
 	}
 
 	public String getUsername() {
