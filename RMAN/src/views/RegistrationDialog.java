@@ -12,6 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import interfaces.ServiceInterface;
+import services.OracleService;
+
 /**
  * View for user registration.
  */
@@ -107,6 +110,8 @@ public class RegistrationDialog extends Dialog {
 			return;
 
 		// registration logic
+		ServiceInterface serviceInterface = new OracleService("stefan","stefan","host", 1521, "testdb");
+		
 	}
 
 }

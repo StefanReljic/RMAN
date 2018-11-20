@@ -12,18 +12,25 @@ public class MenuLine extends JComponent {
 
 	private JMenuBar menuBar;
 
+	public static final String FILE_LABEL = "File";
+	public static final String NEW_RESOURCE_LABEL = "Add new information resource";
+	public static final String EXIT_LABEL = "Exit";
+	public static final String HELP_LABEL = "Help";
+	public static final String CONTEXTUAL_HELP_LABEL = "Show Contextual Help";
+	public static final String ABOUT_LABEL = "About RMAN";
+
 	public MenuLine() {
 		menuBar = new JMenuBar();
 
-		JMenu fileMenu = new JMenu("File");
-		JMenuItem addInformationResourceItem = new JMenuItem("Add new information resource");
-		JMenuItem exitItem = new JMenuItem("Exit");
+		JMenu fileMenu = new JMenu(FILE_LABEL);
+		JMenuItem addInformationResourceItem = new JMenuItem(NEW_RESOURCE_LABEL);
+		JMenuItem exitItem = new JMenuItem(EXIT_LABEL);
 		fileMenu.add(addInformationResourceItem);
 		fileMenu.add(exitItem);
 
-		JMenu helpMenu = new JMenu("Help");
-		JMenuItem contextualHelpItem = new JMenuItem("Show Contextual Help");
-		JMenuItem aboutApplicationItem = new JMenuItem("About RMAN");
+		JMenu helpMenu = new JMenu(HELP_LABEL);
+		JMenuItem contextualHelpItem = new JMenuItem(CONTEXTUAL_HELP_LABEL);
+		JMenuItem aboutApplicationItem = new JMenuItem(ABOUT_LABEL);
 		helpMenu.add(contextualHelpItem);
 		helpMenu.add(aboutApplicationItem);
 

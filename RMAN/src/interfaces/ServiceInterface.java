@@ -2,18 +2,19 @@ package interfaces;
 
 import java.io.File;
 import java.sql.Connection;
+import java.util.List;
 
-import model.Item;
+import model.Row;
 
 public interface ServiceInterface {
 
-	public void addObject(Item object);
+	public void addObject(Row object);
 
-	public void deleteObject(Item object);
+	public void deleteObject(Row object);
 
-	public void updateObject(Item object);
+	public void updateObject(Row object);
 
-	public Item readObject();
+	public List<Row> readObjects(String name);
 
 	public Connection getConnection();
 

@@ -1,7 +1,5 @@
 package model;
 
-import java.awt.Image;
-
 public class Item {
 
 	String type;
@@ -10,55 +8,14 @@ public class Item {
 
 	public Item(String type, Object value) {
 		super();
+
 		this.type = type;
 		this.value = value;
-
-		switch (type) {
-
-		case "int":
-			this.classType = Integer.class;
-			break;
-
-		case "float":
-			this.classType = Float.class;
-			break;
-
-		case "double":
-			this.classType = Double.class;
-			break;
-
-		case "char":
-			this.classType = Character.class;
-			break;
-
-		case "string":
-			this.classType = String.class;
-			break;
-
-		case "boolean":
-			this.classType = Boolean.class;
-			break;
-
-		case "byte":
-			this.classType = Byte.class;
-			break;
-
-		case "photo":
-			this.classType = Image.class;
-			break;
-
-		case "audio":
-			this.classType = Byte.class; // dodati klasu
-			break;
-
-		case "video":
-			this.classType = Byte.class; // dodati klasu
-			break;
-
-		default:
-			break;
+		try {
+			classType = Class.forName(type);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-
 	}
 
 	public String getType() {
