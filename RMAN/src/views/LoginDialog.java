@@ -43,7 +43,8 @@ public class LoginDialog extends Dialog {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			login();
+			if (e.getKeyCode() == KeyEvent.VK_ENTER)
+				login();
 		}
 	};
 
