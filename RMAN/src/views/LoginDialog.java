@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -18,7 +20,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import interfaces.ServiceInterface;
 import model.User;
 import services.UserService;
 
@@ -28,6 +29,7 @@ public class LoginDialog extends Dialog {
 	private static final String PASSWORD_LABEL = "Password";
 	private static final String LOGIN_LABEL = "Login";
 	private static final String REGISTRATION_LABEL = "Registration";
+	private static final String MAIN_LABEL = "Main";
 
 	private JTextField usernameTextField;
 	private JPasswordField passwordTextField;
@@ -92,6 +94,48 @@ public class LoginDialog extends Dialog {
 			}
 		});
 
+		FocusListener focusListener = new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent e) {
+
+				if (e.getSource() instanceof JTextField) {
+
+					JTextField jTextField = (JTextField) e.getSource();
+					if (jTextField.getText().trim().equals(""))
+						jTextField.setBackground(Color.RED);
+					else
+						jTextField.setBackground(Color.WHITE);
+
+				}
+				if (e.getSource() instanceof JPasswordField) {
+
+					JPasswordField jPasswordField = (JPasswordField) e.getSource();
+					jPasswordField.setBackground(Color.WHITE);
+
+					if (new String(jPasswordField.getPassword()).trim().equals(""))
+						jPasswordField.setBackground(Color.RED);
+					else
+						jPasswordField.setBackground(Color.WHITE);
+				}
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+
+				if (e.getSource() instanceof JTextField) {
+
+					JTextField jTextField = (JTextField) e.getSource();
+					jTextField.setBackground(Color.WHITE);
+				}
+				if (e.getSource() instanceof JPasswordField) {
+
+					JPasswordField jPasswordField = (JPasswordField) e.getSource();
+					jPasswordField.setBackground(Color.WHITE);
+				}
+			}
+		};
+
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbs = new GridBagConstraints();
 
@@ -143,6 +187,9 @@ public class LoginDialog extends Dialog {
 		usernameTextField.addKeyListener(keyListener);
 		passwordTextField.addKeyListener(keyListener);
 		registerButton.addActionListener(e -> register());
+		usernameTextField.addFocusListener(focusListener);
+		passwordTextField.addFocusListener(focusListener);
+
 		this.parrent.getRootPane().setDefaultButton(loginButton);
 
 		setTitle(LOGIN_LABEL);
@@ -153,7 +200,7 @@ public class LoginDialog extends Dialog {
 
 	public void register() {
 
-		RegistrationDialog registrationDialog = new RegistrationDialog(parrent);
+		RegistrationDialog registrationDialog = new RegistrationDialog(new JFrame(REGISTRATION_LABEL));
 		registrationDialog.setVisible(true);
 	}
 
@@ -162,25 +209,39 @@ public class LoginDialog extends Dialog {
 		String username = usernameTextField.getText();
 		String password = new String(passwordTextField.getPassword());
 
-		if (username == null || password == null) {
-			return;
-		}
-		if (username.trim().equals("") || password.trim().equals("")) {
-			return;
-		}
-
 		User user = new User();
 		user.setUsername(username);
 		user.setPassword(password);
-		UserService userService = new UserService("rman", "rman", "localhost", 1521, "orcl");
+		UserService userService = new UserService("rman", "rman", "localhost", 1521, "testdb");
 		boolean success = userService.authenticate(user);
-		
-		if(success) {
-			MainWindow main = new MainWindow(parrent);
+
+		if (success) {
+			MainWindow main = new MainWindow(new JFrame(MAIN_LABEL));
 			main.setVisible(true);
+			dispose();
 		}
 		parrent.setVisible(true);
 		return;
+	}
+
+	public boolean validateInput() {
+
+		boolean result = true;
+
+		usernameTextField.setBackground(Color.WHITE);
+		passwordTextField.setBackground(Color.WHITE);
+
+		if (usernameLabel.getText().trim().equals("")) {
+			usernameTextField.setBackground(Color.RED);
+			result = false;
+		}
+
+		if (new String(passwordTextField.getPassword()).trim().equals("")) {
+			passwordTextField.setBackground(Color.RED);
+			result = false;
+		}
+
+		return result;
 	}
 
 	public String getUsername() {

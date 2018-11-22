@@ -1,8 +1,6 @@
 package application;
 
 import java.awt.EventQueue;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
@@ -11,6 +9,9 @@ import java.awt.CardLayout;
 import views.LoginDialog;
 
 public class Application {
+
+	private static final String RMAN = "RMAN";
+	private static final String LOGIN = "Login";
 
 	private JFrame frmRman;
 
@@ -23,9 +24,8 @@ public class Application {
 				try {
 					Application window = new Application();
 					window.frmRman.setVisible(false);
-					
-					JFrame frame = new JFrame("Login");
-				
+
+					JFrame frame = new JFrame(LOGIN);
 					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 					LoginDialog dialog = new LoginDialog(frame);
 					dialog.setVisible(true);
@@ -50,12 +50,10 @@ public class Application {
 	private void initialize() {
 
 		frmRman = new JFrame();
-		frmRman.setTitle("RMAN");
+		frmRman.setTitle(RMAN);
 		frmRman.setBounds(100, 100, 366, 231);
 		frmRman.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmRman.getContentPane().setLayout(new CardLayout(0, 0));
-		
-	
 
 	}
 }

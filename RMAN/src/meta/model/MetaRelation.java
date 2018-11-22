@@ -2,7 +2,6 @@ package meta.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 
 public class MetaRelation implements Serializable {
 

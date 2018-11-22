@@ -1,5 +1,6 @@
 package components;
 
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
 import javax.swing.JComponent;
@@ -25,6 +26,9 @@ public class MenuLine extends JComponent {
 		JMenu fileMenu = new JMenu(FILE_LABEL);
 		JMenuItem addInformationResourceItem = new JMenuItem(NEW_RESOURCE_LABEL);
 		JMenuItem exitItem = new JMenuItem(EXIT_LABEL);
+		exitItem.addActionListener(e -> {
+			System.exit(0);
+		});
 		fileMenu.add(addInformationResourceItem);
 		fileMenu.add(exitItem);
 
@@ -38,7 +42,12 @@ public class MenuLine extends JComponent {
 		menuBar.add(helpMenu);
 
 		JPanel panel = new JPanel(new GridBagLayout());
-		panel.add(menuBar);
+		GridBagConstraints gbs = new GridBagConstraints();
+		gbs.gridx = 0;
+		gbs.gridy = 0;
+		gbs.gridwidth = 3;
+		panel.add(menuBar, gbs);
+		
 		add(panel);
 	}
 
