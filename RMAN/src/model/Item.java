@@ -11,11 +11,7 @@ public class Item {
 
 		this.type = type;
 		this.value = value;
-		try {
-			classType = Class.forName(type);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	public String getType() {

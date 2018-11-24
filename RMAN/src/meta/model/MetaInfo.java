@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class MetaInfo implements Serializable {
 
+	private static final long serialVersionUID = -566939855607504901L;
+
 	private String user;
 	private String password;
 	private String host;

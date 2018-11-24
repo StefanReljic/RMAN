@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,7 +79,14 @@ public class OracleService extends AbstractService {
 	@Override
 	public void addObject(Row object) {
 
-		String sql = "insert into ? values (";
+		List<String> keys = object.getItems().keySet().stream().collect(Collectors.toList());
+		String sql = "insert into " + object.getTableName() + " (";
+
+		for (String key : keys)
+			sql += key + ",";
+
+		sql = sql.substring(0, sql.length() - 1);
+		sql += ") values (";
 		List<Item> items = object.getItems().values().stream().collect(Collectors.toList());
 		for (Item item : items) {
 			sql += "?,";
@@ -89,9 +97,9 @@ public class OracleService extends AbstractService {
 		try (Connection connection = getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-				statement.setString(1, object.getTableName());
-				for (int i = 0; i < items.size(); ++i)
-					statement.setObject(i + 2, items.get(i));
+				for (int i = 0; i < items.size(); ++i) {
+					statement.setObject(i + 1, items.get(i).getValue());
+				}
 				try (ResultSet rs = statement.executeQuery()) {
 
 				}
@@ -167,15 +175,31 @@ public class OracleService extends AbstractService {
 	}
 
 	@Override
-	public List<Row> readObjects(String name) {
+	public List<Row> readObjects(String name, HashMap<String, Object> conditions) {
 
-		String sql = "select * from ?";
+		String sql = "select * from " + name;
+
+		List<String> keys = null;
+		if (conditions != null && conditions.size() != 0) {
+			sql += " where ";
+			keys = conditions.keySet().stream().collect(Collectors.toList());
+			for (String key : keys) {
+				sql += key + " = ? and ";
+			}
+			sql = sql.substring(0, sql.length() - 4);
+		}
 
 		List<Row> rows = new LinkedList<Row>();
 
 		try (Connection connection = getConnection();) {
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-				statement.setString(1, name);
+
+				if (conditions != null) {
+					for (int i = 0; i < keys.size(); ++i) {
+						statement.setObject(i + 1, conditions.get(keys.get(i)));
+					}
+				}
+
 				try (ResultSet rs = statement.executeQuery()) {
 
 					ResultSetMetaData resultSetMetaData = rs.getMetaData();
@@ -186,8 +210,8 @@ public class OracleService extends AbstractService {
 						Row row = new Row();
 						for (int i = 0; i < numberOfArguments; ++i) {
 
-							Item item = new Item(resultSetMetaData.getColumnClassName(i), rs.getObject(i));
-							row.getItems().put(resultSetMetaData.getColumnTypeName(i), item);
+							Item item = new Item(resultSetMetaData.getColumnClassName(i + 1), rs.getObject(i + 1));
+							row.getItems().put(resultSetMetaData.getColumnTypeName(i + 1), item);
 						}
 						rows.add(row);
 					}

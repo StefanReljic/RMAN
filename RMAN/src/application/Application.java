@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 
 import java.awt.CardLayout;
 
-import views.LoginDialog;
+import views.LoginView;
 
 public class Application {
 
@@ -27,7 +27,7 @@ public class Application {
 
 					JFrame frame = new JFrame(LOGIN);
 					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-					LoginDialog dialog = new LoginDialog(frame);
+					LoginView dialog = new LoginView(frame);
 					dialog.setVisible(true);
 
 				} catch (Exception e) {

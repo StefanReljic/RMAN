@@ -11,6 +11,8 @@ import model.Row;
 
 public class BasicGrid extends AbstractGrid {
 
+	private static final long serialVersionUID = 6016062016941548001L;
+
 	public BasicGrid() {
 
 		super();

@@ -11,11 +11,35 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class MessageBox extends JDialog {
+public class AboutRMANComponent extends JDialog {
 
-	private static final long serialVersionUID = 7878208210093730203L;
+	private static final long serialVersionUID = 6578158697574213700L;
 
-	public MessageBox(JFrame parrent, String message) {
+	public static final String TITLE = "Resource Manager";
+	public static final String VERSION_LABEL = "Version: 1.0";
+
+	public AboutRMANComponent(JFrame parrent) {
+		super(parrent);
+
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbs = new GridBagConstraints();
+
+		JLabel title = new JLabel(TITLE);
+		JLabel versionLabel = new JLabel(VERSION_LABEL);
+
+		gbs.gridx = 0;
+		gbs.gridy = 0;
+		gbs.weightx = 1;
+		panel.add(title, gbs);
+
+		gbs.gridx = 0;
+		gbs.gridy = 1;
+		gbs.gridwidth = 1;
+		panel.add(versionLabel, gbs);
+
+		add(panel, BorderLayout.CENTER);
+		setLocationRelativeTo(parrent);
+		pack();
 
 		addWindowListener(new WindowListener() {
 
@@ -48,21 +72,5 @@ public class MessageBox extends JDialog {
 			public void windowActivated(WindowEvent e) {
 			}
 		});
-
-		JLabel messageLabel = new JLabel(message);
-
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints gbs = new GridBagConstraints();
-
-		gbs.gridx = 2;
-		gbs.gridy = 1;
-		gbs.gridwidth = 3;
-		panel.add(messageLabel, gbs);
-
-		panel.setBounds(0, 0, 400, 500);
-		add(panel, BorderLayout.CENTER);
-		pack();
-		setLocationRelativeTo(parrent);
-
 	}
 }

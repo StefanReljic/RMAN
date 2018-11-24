@@ -7,11 +7,13 @@ import javax.swing.JTable;
 
 import model.Row;
 
-public abstract class AbstractGrid extends JComponent{
+public abstract class AbstractGrid extends JComponent {
+
+	private static final long serialVersionUID = -8575992417939160651L;
 
 	protected List<Row> rows;
 	protected JTable grid;
-	
+
 	public List<Row> getRows() {
 		return rows;
 	}

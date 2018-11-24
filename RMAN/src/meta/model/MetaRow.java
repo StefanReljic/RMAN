@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 public class MetaRow implements Serializable {
 
+	private static final long serialVersionUID = -1294388804459581350L;
+
 	/**
 	 * String is name of the property, MetaItem is representation of property type.
 	 */

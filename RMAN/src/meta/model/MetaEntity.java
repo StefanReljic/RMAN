@@ -6,6 +6,8 @@ import java.util.List;
 
 public class MetaEntity implements Serializable {
 
+	private static final long serialVersionUID = -918748377884983891L;
+
 	private String entityName;
 	private MetaRow metaRow;
 	private List<MetaRelation> relations;

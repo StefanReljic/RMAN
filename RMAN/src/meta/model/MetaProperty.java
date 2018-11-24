@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class MetaProperty implements Serializable {
 
+	private static final long serialVersionUID = -6459843494006185283L;
+	
 	private String type;
 	private Class classType;
 

@@ -6,6 +6,8 @@ import java.util.List;
 
 public class MetaDescription implements Serializable {
 
+	private static final long serialVersionUID = -3177385009031570330L;
+	
 	private MetaInfo metaInfo;
 	private List<MetaEntity> metaEntities;
 

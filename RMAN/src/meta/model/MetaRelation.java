@@ -5,10 +5,12 @@ import java.util.HashMap;
 
 public class MetaRelation implements Serializable {
 
-	String parrentTable;
-	HashMap<String, MetaProperty> parrentIds;
-	String childTable;
-	HashMap<String, MetaProperty> childIds;
+	private static final long serialVersionUID = -3326846988069406450L;
+	
+	private String parrentTable;
+	private HashMap<String, MetaProperty> parrentIds;
+	private String childTable;
+	private HashMap<String, MetaProperty> childIds;
 
 	public MetaRelation() {
 		super();
