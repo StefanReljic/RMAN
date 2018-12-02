@@ -117,7 +117,7 @@ public class OracleService extends AbstractService {
 
 		for (String column : columns)
 			if (column.startsWith("id#"))
-				sql += column + " = ? and ";
+				sql += column.split("#")[1] + " = ? and ";
 
 		sql = sql.substring(0, sql.length() - 4);
 
@@ -175,9 +175,19 @@ public class OracleService extends AbstractService {
 	}
 
 	@Override
-	public List<Row> readObjects(String name, HashMap<String, Object> conditions) {
+	public List<Row> readObjects(String name, List<String> columns, HashMap<String, Object> conditions) {
 
-		String sql = "select * from " + name;
+		String columnString = "";
+		if (columns == null || columns.size() == 0)
+			columnString = "*";
+		else {
+			for (String col : columns) {
+				columnString += col + ",";
+			}
+			columnString = columnString.substring(0, columnString.length() - 1);
+		}
+
+		String sql = "select " + columnString + " from " + name;
 
 		List<String> keys = null;
 		if (conditions != null && conditions.size() != 0) {
@@ -232,7 +242,6 @@ public class OracleService extends AbstractService {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		Connection connection = null;

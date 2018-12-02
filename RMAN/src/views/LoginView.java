@@ -222,7 +222,7 @@ public class LoginView extends Dialog {
 		HashMap<String, Object> objects = new HashMap<String, Object>();
 		objects.put("username", username);
 		objects.put("password", password);
-		List<Row> result = oracleService.readObjects("user_table", objects);
+		List<Row> result = oracleService.readObjects("user_table", null, objects);
 
 		if (result != null && result.size() != 0) {
 			MainView main = new MainView(new JFrame(MAIN_LABEL));

@@ -15,7 +15,7 @@ public interface ServiceInterface {
 
 	public void updateObject(Row object);
 
-	public List<Row> readObjects(String name, HashMap<String, Object> conditions);
+	public List<Row> readObjects(String name, List<String> columns, HashMap<String, Object> conditions);
 
 	public Connection getConnection();
 

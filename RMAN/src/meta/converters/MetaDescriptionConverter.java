@@ -62,9 +62,8 @@ public class MetaDescriptionConverter {
 
 				metaProperty.put("propertyName", key);
 				metaProperty.put("type", metaPropertyObject.getType());
-				metaProperty.put("classType", metaPropertyObject.getClass().getName());
 
-				metaRow.put(metaPropertyObject);
+				metaRow.put(metaProperty);
 			}
 
 			/**
@@ -86,9 +85,8 @@ public class MetaDescriptionConverter {
 
 					metaProperty.put("propertyName", key);
 					metaProperty.put("type", metaPropertyObject.getType());
-					metaProperty.put("classType", metaPropertyObject.getClass().getName());
 
-					metaParrentIds.put(metaPropertyObject);
+					metaParrentIds.put(metaProperty);
 				}
 
 				HashMap<String, MetaProperty> childIds = relation.getChildIds();
@@ -100,9 +98,8 @@ public class MetaDescriptionConverter {
 
 					metaProperty.put("propertyName", key);
 					metaProperty.put("type", metaPropertyObject.getType());
-					metaProperty.put("classType", metaPropertyObject.getClass().getName());
 
-					metaChildIds.put(metaPropertyObject);
+					metaChildIds.put(metaProperty);
 				}
 
 				metaRelation.put("parrentTable", relation.getParrentTable());
@@ -173,9 +170,6 @@ public class MetaDescriptionConverter {
 
 				metaPropertyObject.setType(metaProperty.getString("type"));
 
-				// critical part of code
-				metaPropertyObject.setClassType(Class.forName(metaProperty.getString("classType")));
-
 				metaRowObject.getItems().put(metaProperty.getString("propertyName"), metaPropertyObject);
 			}
 
@@ -195,7 +189,6 @@ public class MetaDescriptionConverter {
 					JSONObject metaProperty = parrentIds.getJSONObject(k);
 					MetaProperty metaPropertyObject = new MetaProperty();
 					metaPropertyObject.setType(metaProperty.getString("type"));
-					metaPropertyObject.setClassType(Class.forName(metaProperty.getString("classType")));
 
 					parrentIdObjects.put(metaProperty.getString("propertyName"), metaPropertyObject);
 				}
@@ -205,7 +198,6 @@ public class MetaDescriptionConverter {
 					JSONObject metaProperty = childIds.getJSONObject(k);
 					MetaProperty metaPropertyObject = new MetaProperty();
 					metaPropertyObject.setType(metaProperty.getString("type"));
-					metaPropertyObject.setClassType(Class.forName(metaProperty.getString("classType")));
 
 					childIdObjects.put(metaProperty.getString("propertyName"), metaPropertyObject);
 				}
