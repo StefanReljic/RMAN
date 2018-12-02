@@ -18,12 +18,25 @@
 		</plugins>
 	</build>
 	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.17</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20180130</version>
 		</dependency>
-		
+
+		<!-- https://mvnrepository.com/artifact/com.vaadin/flow-server -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>flow-server</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.oracle</groupId>
@@ -33,6 +46,10 @@
 
 	</dependencies>
 	<repositories>
+		<repository>
+			<id>Central</id>
+			<url>http://central.maven.org/maven2/</url>
+		</repository>
 		<repository>
 			<id>maven.oracle.com</id>
 			<name>oracle-maven-repo</name>
