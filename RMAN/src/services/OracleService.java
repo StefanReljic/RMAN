@@ -246,8 +246,7 @@ public class OracleService extends AbstractService {
 		}
 		Connection connection = null;
 		try {
-			connection = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":" + port + ":" + serviceId, user,
-					password);
+			connection = DriverManager.getConnection("jdbc:oracle:thin:@" + host + ":" + port + ":" + serviceId, user, password);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

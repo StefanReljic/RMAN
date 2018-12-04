@@ -231,7 +231,7 @@ public class RegistrationView extends Dialog {
 		Row row = new Row();
 		HashMap<String, Item> items = new HashMap<String, Item>();
 
-		Item idItem = new Item("String", 2);
+		Item idItem = new Item("String", "USER_SEQ.NEXTVAL");
 		Item usernameItem = new Item("String", username);
 		Item passwordItem = new Item("String", password);
 		Item firstnameItem = new Item("String", firstname);

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -11,13 +13,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
+import org.apache.commons.collections4.map.HashedMap;
+
 import components.BasicGrid;
 import components.MenuLine;
+import components.MessageBox;
+import interfaces.ServiceInterface;
+import model.Row;
+import services.OracleService;
 
 public class MainView extends Dialog {
 
 	private static final long serialVersionUID = -8712372762807225105L;
 
+	private static final String NO_INFORMATION_RESOURCE_MESSAGE = "Information resource doesn't exist.";
+	
 	private JFrame parrent;
 	private MenuLine menu;
 	private List<BasicGrid> grids;
@@ -27,7 +37,7 @@ public class MainView extends Dialog {
 
 		this.parrent = parrent;
 		this.menu = new MenuLine();
-		this.grids = getGrids();
+		//this.grids = getGrids();
 
 		JScrollPane informationResourcesScrollPane = new JScrollPane();
 		JScrollPane informationResourceScrollPane = new JScrollPane();
@@ -79,6 +89,24 @@ public class MainView extends Dialog {
 	private List<BasicGrid> getGrids() {
 
 		String informationResource = "";
+		int id = 1;
+		
+		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+
+		HashMap<String, Object> conditions = new HashMap<String, Object>();
+		conditions.put("id", id);
+		
+		List<Row> rows = serviceInterface.readObjects("information_resource", null, conditions);
+		
+		if(rows != null && rows.size() != 0) {
+			
+			
+			
+		}else {
+			MessageBox messageBox = new MessageBox(new JFrame(), NO_INFORMATION_RESOURCE_MESSAGE);
+			messageBox.setVisible(true);
+		}
+		
 		return null;
 	}
 

@@ -22,4 +22,5 @@ public interface ServiceInterface {
 	public File getInformationResourceDescription();
 
 	public void setInformationResourceDescription();
+
 }

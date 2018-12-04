@@ -12,23 +12,17 @@ public class MetaInfo implements Serializable {
 	private int port;
 	private String resourceId;
 
-	/**
-	 * Fill only for not database information resources.
-	 */
-	private String fullResourcePath;
-
 	public MetaInfo() {
 
 	}
 
-	public MetaInfo(String user, String password, String host, int port, String resourceId, String fullResourcePath) {
+	public MetaInfo(String user, String password, String host, int port, String resourceId) {
 		super();
 		this.user = user;
 		this.password = password;
 		this.host = host;
 		this.port = port;
 		this.resourceId = resourceId;
-		this.fullResourcePath = fullResourcePath;
 	}
 
 	public String getUser() {
@@ -69,14 +63,6 @@ public class MetaInfo implements Serializable {
 
 	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
-	}
-
-	public String getFullResourcePath() {
-		return fullResourcePath;
-	}
-
-	public void setFullResourcePath(String fullResourcePath) {
-		this.fullResourcePath = fullResourcePath;
 	}
 
 }

@@ -40,7 +40,6 @@ public class MetaDescriptionConverter {
 		metaInfo.put("host", metaInfoObject.getHost());
 		metaInfo.put("port", metaInfoObject.getPort());
 		metaInfo.put("resourceId", metaInfoObject.getResourceId());
-		metaInfo.put("fullResourcePath", metaInfoObject.getFullResourcePath());
 
 		List<MetaEntity> metaEntityObjects = metaDescription.getMetaEntities();
 		for (MetaEntity entity : metaEntityObjects) {
@@ -131,7 +130,7 @@ public class MetaDescriptionConverter {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	public MetaDescription fileToMetaDescription(File file) throws IOException, ClassNotFoundException {
+	public MetaDescription fileToMetaDescription(File file) throws IOException {
 
 		MetaDescription result = new MetaDescription();
 
@@ -150,7 +149,6 @@ public class MetaDescriptionConverter {
 		metaInfoObject.setHost(metaInfo.getString("host"));
 		metaInfoObject.setPort(metaInfo.getInt("port"));
 		metaInfoObject.setResourceId(metaInfo.getString("resourceId"));
-		metaInfoObject.setFullResourcePath(metaInfo.getString("fullResourcePath"));
 
 		JSONArray metaEntities = metaDescription.getJSONArray("metaEntities");
 		List<MetaEntity> metaEntityObjects = new LinkedList<MetaEntity>();
