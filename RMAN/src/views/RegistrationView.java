@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,7 +49,7 @@ public class RegistrationView extends Dialog {
 	private JTextField firstnameField;
 	private JTextField lastnameField;
 
-	public RegistrationView(JFrame parrent) {
+	public RegistrationView(JFrame parrent, LoginView loginView) {
 		super(parrent);
 
 		this.parrent = parrent;
@@ -74,6 +75,7 @@ public class RegistrationView extends Dialog {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				dispose();
+				loginView.setVisible(true);
 			}
 
 			@Override
@@ -94,20 +96,20 @@ public class RegistrationView extends Dialog {
 
 					JTextField jTextField = (JTextField) e.getSource();
 					if (jTextField.getText().trim().equals(""))
-						jTextField.setBackground(Color.RED);
+						jTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
 					else
-						jTextField.setBackground(Color.WHITE);
+						jTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 				}
 				if (e.getSource() instanceof JPasswordField) {
 
 					JPasswordField jPasswordField = (JPasswordField) e.getSource();
-					jPasswordField.setBackground(Color.WHITE);
+					jPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 					if (new String(jPasswordField.getPassword()).trim().equals(""))
-						jPasswordField.setBackground(Color.RED);
+						jPasswordField.setBorder(BorderFactory.createLineBorder(Color.RED));
 					else
-						jPasswordField.setBackground(Color.WHITE);
+						jPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 			}
 
@@ -117,12 +119,12 @@ public class RegistrationView extends Dialog {
 				if (e.getSource() instanceof JTextField) {
 
 					JTextField jTextField = (JTextField) e.getSource();
-					jTextField.setBackground(Color.WHITE);
+					jTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 				if (e.getSource() instanceof JPasswordField) {
 
 					JPasswordField jPasswordField = (JPasswordField) e.getSource();
-					jPasswordField.setBackground(Color.WHITE);
+					jPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 			}
 		};
@@ -149,6 +151,7 @@ public class RegistrationView extends Dialog {
 
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbs = new GridBagConstraints();
+		gbs.anchor = GridBagConstraints.WEST;
 
 		gbs.gridx = 0;
 		gbs.gridy = 0;
@@ -263,39 +266,38 @@ public class RegistrationView extends Dialog {
 
 		boolean result = true;
 
-		usernameField.setBackground(Color.WHITE);
-		passwordField.setBackground(Color.WHITE);
-		confirmPasswordField.setBackground(Color.WHITE);
-		firstnameField.setBackground(Color.WHITE);
-		lastnameField.setBackground(Color.WHITE);
+		usernameField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		passwordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		confirmPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		firstnameField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		lastnameField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		if (usernameField.getText().trim().equals("")) {
-			usernameField.setBackground(Color.RED);
+			usernameField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
 		if (new String(passwordField.getPassword()).trim().equals("")) {
-			passwordField.setBackground(Color.RED);
+			passwordField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
 		if (new String(confirmPasswordField.getPassword()).trim().equals("")) {
-			confirmPasswordField.setBackground(Color.RED);
+			confirmPasswordField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
 		if (firstnameField.getText().trim().equals("")) {
-			firstnameField.setBackground(Color.RED);
+			firstnameField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
 		if (lastnameField.getText().trim().equals("")) {
-			lastnameField.setBackground(Color.RED);
+			lastnameField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
-		if (!new String(passwordField.getPassword()).trim()
-				.equals(new String(confirmPasswordField.getPassword()).trim())) {
+		if (!new String(passwordField.getPassword()).trim().equals(new String(confirmPasswordField.getPassword()).trim())) {
 			MessageBox messageBox = new MessageBox(new JFrame(""), PASSWORD_MUST_MATCH_MESSAGE);
 			messageBox.setVisible(true);
 			result = false;

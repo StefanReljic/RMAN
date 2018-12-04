@@ -14,6 +14,7 @@ import java.awt.event.WindowListener;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -83,6 +84,7 @@ public class LoginView extends Dialog {
 
 			@Override
 			public void windowDeactivated(WindowEvent e) {
+				e.getWindow().setVisible(false);
 			}
 
 			@Override
@@ -96,6 +98,7 @@ public class LoginView extends Dialog {
 
 			@Override
 			public void windowActivated(WindowEvent e) {
+				e.getWindow().setVisible(true);
 			}
 		});
 
@@ -108,20 +111,20 @@ public class LoginView extends Dialog {
 
 					JTextField jTextField = (JTextField) e.getSource();
 					if (jTextField.getText().trim().equals(""))
-						jTextField.setBackground(Color.RED);
+						jTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
 					else
-						jTextField.setBackground(Color.WHITE);
+						jTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 				}
 				if (e.getSource() instanceof JPasswordField) {
 
 					JPasswordField jPasswordField = (JPasswordField) e.getSource();
-					jPasswordField.setBackground(Color.WHITE);
+					jPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 					if (new String(jPasswordField.getPassword()).trim().equals(""))
-						jPasswordField.setBackground(Color.RED);
+						jPasswordField.setBorder(BorderFactory.createLineBorder(Color.RED));
 					else
-						jPasswordField.setBackground(Color.WHITE);
+						jPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 			}
 
@@ -131,19 +134,19 @@ public class LoginView extends Dialog {
 				if (e.getSource() instanceof JTextField) {
 
 					JTextField jTextField = (JTextField) e.getSource();
-					jTextField.setBackground(Color.WHITE);
+					jTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 				if (e.getSource() instanceof JPasswordField) {
 
 					JPasswordField jPasswordField = (JPasswordField) e.getSource();
-					jPasswordField.setBackground(Color.WHITE);
+					jPasswordField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 			}
 		};
 
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbs = new GridBagConstraints();
-
+		gbs.anchor = GridBagConstraints.WEST;
 		gbs.fill = GridBagConstraints.HORIZONTAL;
 
 		usernameLabel = new JLabel(USERNAME_LABEL + ":");
@@ -205,7 +208,7 @@ public class LoginView extends Dialog {
 
 	public void register() {
 
-		RegistrationView registrationDialog = new RegistrationView(new JFrame(REGISTRATION_LABEL));
+		RegistrationView registrationDialog = new RegistrationView(new JFrame(REGISTRATION_LABEL), this);
 		registrationDialog.setVisible(true);
 	}
 
@@ -237,16 +240,16 @@ public class LoginView extends Dialog {
 
 		boolean result = true;
 
-		usernameTextField.setBackground(Color.WHITE);
-		passwordTextField.setBackground(Color.WHITE);
+		usernameTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		passwordTextField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		if (usernameLabel.getText().trim().equals("")) {
-			usernameTextField.setBackground(Color.RED);
+			usernameTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
 		if (new String(passwordTextField.getPassword()).trim().equals("")) {
-			passwordTextField.setBackground(Color.RED);
+			passwordTextField.setBorder(BorderFactory.createLineBorder(Color.RED));
 			result = false;
 		}
 
