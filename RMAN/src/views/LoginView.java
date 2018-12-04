@@ -148,7 +148,7 @@ public class LoginView extends Dialog {
 		GridBagConstraints gbs = new GridBagConstraints();
 		gbs.anchor = GridBagConstraints.WEST;
 		gbs.fill = GridBagConstraints.HORIZONTAL;
-
+		
 		usernameLabel = new JLabel(USERNAME_LABEL + ":");
 		gbs.gridx = 0;
 		gbs.gridy = 0;

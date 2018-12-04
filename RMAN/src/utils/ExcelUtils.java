@@ -17,9 +17,6 @@ import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.vaadin.flow.server.InputStreamFactory;
-import com.vaadin.flow.server.StreamResource;
-
 public class ExcelUtils {
 
 	public static final short HEADER_FONT_SIZE = 13;
@@ -73,33 +70,6 @@ public class ExcelUtils {
 			ex.printStackTrace();
 			throw new RuntimeException(ex);
 		}
-	}
-
-	public InputStream exportToInputStream(Object[][] valueMatrix) {
-		InputStream inputStream = new ByteArrayInputStream(exportToByteArray(valueMatrix));
-		return inputStream;
-	}
-
-	public StreamResource exportToStreamResource(String name, Supplier<Object[][]> valueMatrixSupplier) {
-		String allowedName = name.replace("/", "").replace("+", "").replace(" ", "_").concat(EXCEL_EXTENSION);
-		StreamResource streamResource = new StreamResource(allowedName,
-				() -> exportToInputStream(valueMatrixSupplier.get()));
-		return streamResource;
-	}
-
-	public StreamResource exportFileToStreamResource(Supplier<byte[]> fileBytes) {
-
-		InputStreamFactory inputStreamFactory = new InputStreamFactory() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public InputStream createInputStream() {
-				return new ByteArrayInputStream(fileBytes.get());
-			}
-		};
-
-		return new StreamResource("EBITDA.xlsx", inputStreamFactory);
 	}
 
 	/***
