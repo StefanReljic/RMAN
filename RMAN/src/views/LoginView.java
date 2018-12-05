@@ -13,6 +13,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -227,7 +228,7 @@ public class LoginView extends Dialog {
 		HashMap<String, Object> objects = new HashMap<String, Object>();
 		objects.put("username", username);
 		objects.put("password", password);
-		List<Row> result = oracleService.readObjects("user_table", null, objects);
+		List<Row> result = oracleService.readObjects("user_table", objects.keySet().stream().collect(Collectors.toList()), objects);
 
 		if (result != null && result.size() != 0) {
 			MainView main = new MainView(new JFrame(MAIN_LABEL));

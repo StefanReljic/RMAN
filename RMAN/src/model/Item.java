@@ -11,7 +11,7 @@ public class Item {
 
 		this.type = type;
 		this.value = value;
-		
+
 	}
 
 	public String getType() {
@@ -38,4 +38,15 @@ public class Item {
 		this.value = value;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+
+		if (obj instanceof Item) {
+			return ((Item) obj).getType().equals(getType()) && ((Item) obj).getValue().equals(getValue());
+		}
+
+		return super.equals(obj);
+	}
 }

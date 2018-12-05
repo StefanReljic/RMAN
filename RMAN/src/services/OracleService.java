@@ -179,7 +179,7 @@ public class OracleService extends AbstractService {
 
 		String columnString = "";
 		if (columns == null || columns.size() == 0)
-			columnString = "*";
+			return null;
 		else {
 			for (String col : columns) {
 				columnString += col + ",";
@@ -218,10 +218,11 @@ public class OracleService extends AbstractService {
 					while (rs.next()) {
 
 						Row row = new Row();
+						row.setTableName(name);
 						for (int i = 0; i < numberOfArguments; ++i) {
 
 							Item item = new Item(resultSetMetaData.getColumnClassName(i + 1), rs.getObject(i + 1));
-							row.getItems().put(resultSetMetaData.getColumnTypeName(i + 1), item);
+							row.getItems().put(columns.get(i), item);
 						}
 						rows.add(row);
 					}
