@@ -44,6 +44,7 @@ public class LoginView extends Dialog {
 	private JButton loginButton;
 	private JButton registerButton;
 
+	private RegistrationView registrationDialog;
 	private JFrame parrent;
 	private KeyListener keyListener = new KeyListener() {
 
@@ -84,7 +85,8 @@ public class LoginView extends Dialog {
 
 			@Override
 			public void windowDeactivated(WindowEvent e) {
-				e.getWindow().setVisible(false);
+				if (registrationDialog != null && registrationDialog.isVisible())
+					e.getWindow().setVisible(false);
 			}
 
 			@Override
@@ -148,7 +150,7 @@ public class LoginView extends Dialog {
 		GridBagConstraints gbs = new GridBagConstraints();
 		gbs.anchor = GridBagConstraints.WEST;
 		gbs.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		usernameLabel = new JLabel(USERNAME_LABEL + ":");
 		gbs.gridx = 0;
 		gbs.gridy = 0;
@@ -208,7 +210,7 @@ public class LoginView extends Dialog {
 
 	public void register() {
 
-		RegistrationView registrationDialog = new RegistrationView(new JFrame(REGISTRATION_LABEL), this);
+		registrationDialog = new RegistrationView(new JFrame(REGISTRATION_LABEL), this);
 		registrationDialog.setVisible(true);
 	}
 
@@ -220,7 +222,7 @@ public class LoginView extends Dialog {
 		String username = usernameTextField.getText();
 		String password = new String(passwordTextField.getPassword());
 
-		ServiceInterface oracleService = new OracleService("rman", "rman", "localhost", 1521, "orcl");
+		ServiceInterface oracleService = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 
 		HashMap<String, Object> objects = new HashMap<String, Object>();
 		objects.put("username", username);

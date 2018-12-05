@@ -9,10 +9,14 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,7 +32,7 @@ import services.OracleService;
 /**
  * View for user registration.
  */
-public class RegistrationView extends Dialog {
+public class RegistrationView extends JDialog {
 
 	private static final long serialVersionUID = -3891948594599857016L;
 
@@ -42,6 +46,7 @@ public class RegistrationView extends Dialog {
 	private static final String PASSWORD_MUST_MATCH_MESSAGE = "Must enter valid confirm password";
 
 	private JFrame parrent;
+	private LoginView loginView;
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 	private JPasswordField confirmPasswordField;
@@ -53,7 +58,8 @@ public class RegistrationView extends Dialog {
 		super(parrent);
 
 		this.parrent = parrent;
-
+		this.loginView = loginView;
+		
 		addWindowListener(new WindowListener() {
 
 			@Override
@@ -231,7 +237,14 @@ public class RegistrationView extends Dialog {
 		Row row = new Row();
 		HashMap<String, Item> items = new HashMap<String, Item>();
 
-		Item idItem = new Item("String", "USER_SEQ.NEXTVAL");
+		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		
+		List<String> idColumns = new LinkedList<String>();
+		idColumns.add("USER_SEQ.NEXTVAL");
+		List<Row> rows = serviceInterface.readObjects("dual", idColumns, null);
+		BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("NUMBER").getValue();
+		
+		Item idItem = new Item("String", nextId);
 		Item usernameItem = new Item("String", username);
 		Item passwordItem = new Item("String", password);
 		Item firstnameItem = new Item("String", firstname);
@@ -251,9 +264,9 @@ public class RegistrationView extends Dialog {
 		if (validateInput()) {
 
 			// registration logic
-			ServiceInterface service = new OracleService("rman", "rman", "localhost", 1521, "orcl");
-			service.addObject(row);
+			serviceInterface.addObject(row);
 			parrent.dispose();
+			loginView.setVisible(true);
 		}
 	}
 
