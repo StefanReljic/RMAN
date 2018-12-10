@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,8 @@ public class MenuLine extends JPanel {
 	public static final String HELP_LABEL = "Help";
 	public static final String CONTEXTUAL_HELP_LABEL = "Show Contextual Help";
 	public static final String ABOUT_LABEL = "About RMAN";
-
+	public static final String CANNOT_ADD_INFORMATION_RESOURCE_MESSAGE = "Cannot add information resource";
+	
 	public MenuLine() {
 		menuBar = new JMenuBar();
 
@@ -79,11 +81,12 @@ public class MenuLine extends JPanel {
 					messageBox.setVisible(true);
 				}
 
-				ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "orcl");
+				ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 				List<String> idColumns = new LinkedList<String>();
 				idColumns.add("INFORMATION_RESOURCE_SEQ.NEXTVAL");
 				List<Row> rows = serviceInterface.readObjects("dual", idColumns, null);
-				BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("NUMBER").getValue();
+				System.out.println(rows);
+				BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("INFORMATION_RESOURCE_SEQ.NEXTVAL").getValue();
 				
 				Row row = new Row();
 				row.setTableName("information_resource");
@@ -112,7 +115,15 @@ public class MenuLine extends JPanel {
 
 				row.setItems(items);
 	
-				serviceInterface.addObject(row);
+				try {
+					serviceInterface.addObject(row);
+				} catch (SQLException e1) {
+					MessageBox messageBox = new MessageBox(new JFrame(), CANNOT_ADD_INFORMATION_RESOURCE_MESSAGE);
+					messageBox.setVisible(true);
+					e1.printStackTrace();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 			}
 
 		});

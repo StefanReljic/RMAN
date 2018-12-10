@@ -3,6 +3,7 @@ package meta.model;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class MetaEntity implements Serializable {
 
@@ -10,6 +11,7 @@ public class MetaEntity implements Serializable {
 
 	private String entityName;
 	private MetaRow metaRow;
+	private Map<String, MetaProperty> metaIds;
 	private List<MetaRelation> relations;
 
 	public MetaEntity() {
@@ -54,6 +56,14 @@ public class MetaEntity implements Serializable {
 
 	public void setMetaRow(MetaRow metaRow) {
 		this.metaRow = metaRow;
+	}
+
+	public Map<String, MetaProperty> getMetaIds() {
+		return metaIds;
+	}
+
+	public void setMetaIds(Map<String, MetaProperty> metaIds) {
+		this.metaIds = metaIds;
 	}
 
 	public List<MetaRelation> getRelations() {

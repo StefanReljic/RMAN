@@ -2,30 +2,51 @@ package views;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
-import java.awt.FlowLayout;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.math.BigDecimal;
+import java.nio.file.Watchable;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.text.html.ObjectView;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
-import org.apache.commons.collections4.map.HashedMap;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import components.BasicGrid;
 import components.MenuLine;
 import components.MessageBox;
 import interfaces.ServiceInterface;
+import meta.model.MetaDescription;
+import meta.model.MetaEntity;
+import meta.model.MetaInfo;
+import model.Item;
 import model.Row;
+import oracle.sql.BLOB;
+import services.AbstractService;
 import services.OracleService;
 
 public class MainView extends Dialog {
@@ -33,10 +54,14 @@ public class MainView extends Dialog {
 	private static final long serialVersionUID = -8712372762807225105L;
 
 	private static final String NO_INFORMATION_RESOURCE_MESSAGE = "Information resource doesn't exist.";
+	private static final String METADESCRIPTION_DOES_NOT_EXIST = "Metadescription does not exist";
 
 	private JFrame parrent;
 	private MenuLine menu;
+	private Map<String, ServiceInterface> interfaces;
+	private Map<String, Item> metaDescriptions;
 	private Hashtable<String, Row> informationResources;
+	private Row selectedInformationResource;
 	private List<BasicGrid> grids;
 
 	private ServiceInterface serviceInterface;
@@ -46,11 +71,23 @@ public class MainView extends Dialog {
 
 		this.parrent = parrent;
 		this.menu = new MenuLine();
+		this.metaDescriptions = new HashMap<String, Item>();
+		interfaces = new HashMap<String, ServiceInterface>();
+		this.selectedInformationResource = null;
+		setInterfaces();
 		setInformationResources(new BigDecimal(1));
-		// setGrids();
 
-		System.out.println(informationResources);
 		JTree informationResourceTree = new JTree(informationResources);
+		informationResourceTree.addTreeSelectionListener(new TreeSelectionListener() {
+
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+
+				selectedInformationResource = informationResources.get(e.getNewLeadSelectionPath().getLastPathComponent());
+				setGrids();
+			}
+		});
+
 		JScrollPane informationResourcesScrollPane = new JScrollPane(informationResourceTree);
 
 		JScrollPane informationResourceScrollPane = new JScrollPane();
@@ -103,7 +140,7 @@ public class MainView extends Dialog {
 	private void setInformationResources(BigDecimal userId) {
 
 		informationResources = new Hashtable<String, Row>();
-		serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		serviceInterface = interfaces.get("information_resource");
 
 		List<Row> userInformationResourceIds = getUserInformationResourceIds(new BigDecimal(1));
 
@@ -121,27 +158,33 @@ public class MainView extends Dialog {
 			for (Row ir : informationResources) {
 				if (ir.getItems().get("id").equals(id.getItems().get("information_resource_id"))) {
 					this.informationResources.put(ir.getTableName(), ir);
+					this.metaDescriptions.put(ir.getTableName(), ir.getItems().get("meta_description"));
 					break;
 				}
 			}
 		}
 	}
 
+	private void setInterfaces() {
+
+		interfaces.put("information_resource", new OracleService("rman", "rman", "localhost", 1521, "testdb"));
+	}
+
 	private void setGrids() {
 
-		String informationResource = "";
-		int id = 1;
+		Row selectedInformatioResource = informationResources.get("information_resource");
 
-		serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
-		List<Row> userInformationResourceIds = getUserInformationResourceIds(new BigDecimal(1));// logged in user id
-		List<Row> informationResources = serviceInterface.readObjects("information_resource", null, null);
+		if (selectedInformatioResource != null) {
 
-		if (userInformationResourceIds != null && userInformationResourceIds.size() != 0) {
+			byte[] bytes = ((BLOB) metaDescriptions.get(selectedInformatioResource.getTableName()).getValue()).getBytes();
+			MetaDescription metaDescription = MetaDescription.deserialize(bytes);
+			if (metaDescription != null) {
 
-			for (Row row : userInformationResourceIds) {
+				ServiceInterface serviceInterface = interfaces.get(metaDescription.getMetaInfo().getResourceId());
 
-				BigDecimal irId = (BigDecimal) row.getItems().get("NUMBER").getValue();
-
+			} else {
+				MessageBox messageBox = new MessageBox(new JFrame(), METADESCRIPTION_DOES_NOT_EXIST);
+				messageBox.setVisible(true);
 			}
 
 		} else {
@@ -165,6 +208,14 @@ public class MainView extends Dialog {
 		conditions.put("user_id", userId);
 
 		return serviceInterface.readObjects("u_ir", columns, conditions);
+	}
+
+	private List<Object> getInformationResourcesIds(List<Row> informationResources) {
+
+		List<HashMap<String, Item>> listOfItems = informationResources.stream().map(ir -> ir.getItems()).collect(Collectors.toList());
+		List<Object> ids = listOfItems.stream().map(i -> i.get("id").getValue()).collect(Collectors.toList());
+
+		return ids;
 	}
 
 }

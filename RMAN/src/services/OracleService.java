@@ -1,6 +1,5 @@
 package services;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import model.Item;
 import model.Row;
@@ -77,7 +77,7 @@ public class OracleService extends AbstractService {
 	}
 
 	@Override
-	public void addObject(Row object) {
+	public void addObject(Row object) throws SQLException {
 
 		List<String> keys = object.getItems().keySet().stream().collect(Collectors.toList());
 		String sql = "insert into " + object.getTableName() + " (";
@@ -88,9 +88,8 @@ public class OracleService extends AbstractService {
 		sql = sql.substring(0, sql.length() - 1);
 		sql += ") values (";
 		List<Item> items = object.getItems().values().stream().collect(Collectors.toList());
-		for (Item item : items) {
-			sql += "?,";
-		}
+		sql += IntStream.range(0, object.getItems().size()).mapToObj(i -> "?,").collect(Collectors.joining());
+
 		sql = sql.substring(0, sql.length() - 1);
 		sql += ")";
 
@@ -104,8 +103,6 @@ public class OracleService extends AbstractService {
 
 				}
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -113,7 +110,7 @@ public class OracleService extends AbstractService {
 	public void deleteObject(Row object) {
 
 		List<String> columns = object.getItems().keySet().stream().collect(Collectors.toList());
-		String sql = "delete from ? where ";
+		String sql = "delete from " + object.getTableName() + " where ";
 
 		for (String column : columns)
 			if (column.startsWith("id#"))
@@ -252,18 +249,6 @@ public class OracleService extends AbstractService {
 			e.printStackTrace();
 		}
 		return connection;
-	}
-
-	@Override
-	public File getInformationResourceDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setInformationResourceDescription() {
-		// TODO Auto-generated method stub
-
 	}
 
 }

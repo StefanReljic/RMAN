@@ -1,5 +1,8 @@
 package meta.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,7 +10,7 @@ import java.util.List;
 public class MetaDescription implements Serializable {
 
 	private static final long serialVersionUID = -3177385009031570330L;
-	
+
 	private MetaInfo metaInfo;
 	private List<MetaEntity> metaEntities;
 
@@ -39,4 +42,30 @@ public class MetaDescription implements Serializable {
 		this.metaEntities = metaEntities;
 	}
 
+	public MetaEntity findMetaEntityByName(String entityName) {
+
+		if (entityName == null)
+			return null;
+
+		for (MetaEntity metaEntity : metaEntities)
+			if (metaEntity.getEntityName().equals(entityName))
+				return metaEntity;
+
+		return null;
+	}
+
+	public static MetaDescription deserialize(byte[] bytes) {
+
+		ObjectInputStream ois;
+		try {
+			ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+			return (MetaDescription) ois.readObject();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

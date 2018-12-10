@@ -1,15 +1,15 @@
 package interfaces;
 
-import java.io.File;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 
+import meta.model.MetaDescription;
 import model.Row;
 
 public interface ServiceInterface {
 
-	public void addObject(Row object);
+	public void addObject(Row object) throws Exception;
 
 	public void deleteObject(Row object);
 
@@ -19,7 +19,7 @@ public interface ServiceInterface {
 
 	public Connection getConnection();
 
-	public File getInformationResourceDescription();
+	public MetaDescription getInformationResourceDescription();
 
 	public void setInformationResourceDescription();
 

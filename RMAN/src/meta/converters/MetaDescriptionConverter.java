@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
@@ -27,7 +28,7 @@ public class MetaDescriptionConverter {
 	 * @param MetaDescription
 	 * @return JSONObject
 	 */
-	public JSONObject metaDescriptionToString(MetaDescription metaDescription) {
+	public JSONObject metaDescriptionToJson(MetaDescription metaDescription) {
 
 		JSONObject result = new JSONObject();
 		JSONObject metaInfo = new JSONObject();
@@ -40,13 +41,15 @@ public class MetaDescriptionConverter {
 		metaInfo.put("host", metaInfoObject.getHost());
 		metaInfo.put("port", metaInfoObject.getPort());
 		metaInfo.put("resourceId", metaInfoObject.getResourceId());
-
+		metaInfo.put("type", metaInfoObject.getType());
+		
 		List<MetaEntity> metaEntityObjects = metaDescription.getMetaEntities();
 		for (MetaEntity entity : metaEntityObjects) {
 
 			JSONObject metaEntity = new JSONObject();
 			JSONArray metaRow = new JSONArray();
 			JSONArray metaRelations = new JSONArray();
+			JSONArray metaIds = new JSONArray();
 
 			/**
 			 * Converts meta row and its meta properties.
@@ -63,6 +66,22 @@ public class MetaDescriptionConverter {
 				metaProperty.put("type", metaPropertyObject.getType());
 
 				metaRow.put(metaProperty);
+			}
+
+			/**
+			 * Converts meta ids for current entity.
+			 */
+			Map<String, MetaProperty> metaIdsObject = entity.getMetaIds();
+			keys = metaIdsObject.keySet().stream().collect(Collectors.toList());
+			for (String key : keys) {
+
+				JSONObject metaProperty = new JSONObject();
+				MetaProperty metaPropertyObject = metaIdsObject.get(key);
+
+				metaProperty.put("propertyName", key);
+				metaProperty.put("type", metaPropertyObject.getType());
+
+				metaIds.put(metaProperty);
 			}
 
 			/**
@@ -111,6 +130,7 @@ public class MetaDescriptionConverter {
 
 			metaEntity.put("entityName", entity.getEntityName());
 			metaEntity.put("metaRow", metaRow);
+			metaEntity.put("metaIds", metaIds);
 			metaEntity.put("metaRelations", metaRelations);
 
 			metaEntities.put(metaEntity);
@@ -149,6 +169,7 @@ public class MetaDescriptionConverter {
 		metaInfoObject.setHost(metaInfo.getString("host"));
 		metaInfoObject.setPort(metaInfo.getInt("port"));
 		metaInfoObject.setResourceId(metaInfo.getString("resourceId"));
+		metaInfoObject.setType(metaInfo.getString("type"));
 
 		JSONArray metaEntities = metaDescription.getJSONArray("metaEntities");
 		List<MetaEntity> metaEntityObjects = new LinkedList<MetaEntity>();
@@ -156,6 +177,7 @@ public class MetaDescriptionConverter {
 
 			JSONObject entity = metaEntities.getJSONObject(i);
 			JSONArray metaRow = entity.getJSONArray("metaRow");
+			JSONArray metaIds = entity.getJSONArray("metaIds");
 			JSONArray metaRelations = entity.getJSONArray("metaRelations");
 
 			MetaEntity metaEntityObject = new MetaEntity();
@@ -169,6 +191,16 @@ public class MetaDescriptionConverter {
 				metaPropertyObject.setType(metaProperty.getString("type"));
 
 				metaRowObject.getItems().put(metaProperty.getString("propertyName"), metaPropertyObject);
+			}
+
+			Map<String, MetaProperty> metaIdsObject = new HashMap<String, MetaProperty>();
+			for (int j = 0; j < metaIds.length(); ++j) {
+
+				JSONObject metaProperty = metaIds.getJSONObject(j);
+				MetaProperty metaPropertyObject = new MetaProperty();
+
+				metaPropertyObject.setType(metaProperty.getString("type"));
+				metaIdsObject.put(metaProperty.getString("propertyName"), metaPropertyObject);
 			}
 
 			List<MetaRelation> metaRelationObjects = new LinkedList<MetaRelation>();
@@ -210,6 +242,7 @@ public class MetaDescriptionConverter {
 
 			metaEntityObject.setEntityName(entity.getString("entityName"));
 			metaEntityObject.setMetaRow(metaRowObject);
+			metaEntityObject.setMetaIds(metaIdsObject);
 			metaEntityObject.setRelations(metaRelationObjects);
 
 			metaEntityObjects.add(metaEntityObject);

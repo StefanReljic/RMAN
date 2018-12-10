@@ -59,7 +59,7 @@ public class RegistrationView extends JDialog {
 
 		this.parrent = parrent;
 		this.loginView = loginView;
-		
+
 		addWindowListener(new WindowListener() {
 
 			@Override
@@ -238,12 +238,12 @@ public class RegistrationView extends JDialog {
 		HashMap<String, Item> items = new HashMap<String, Item>();
 
 		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
-		
+
 		List<String> idColumns = new LinkedList<String>();
 		idColumns.add("USER_SEQ.NEXTVAL");
 		List<Row> rows = serviceInterface.readObjects("dual", idColumns, null);
-		BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("NUMBER").getValue();
-		
+		BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("USER_SEQ.NEXTVAL").getValue();
+
 		Item idItem = new Item("String", nextId);
 		Item usernameItem = new Item("String", username);
 		Item passwordItem = new Item("String", password);
@@ -264,7 +264,11 @@ public class RegistrationView extends JDialog {
 		if (validateInput()) {
 
 			// registration logic
-			serviceInterface.addObject(row);
+			try {
+				serviceInterface.addObject(row);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			parrent.dispose();
 			loginView.setVisible(true);
 		}

@@ -11,6 +11,7 @@ public class MetaInfo implements Serializable {
 	private String host;
 	private int port;
 	private String resourceId;
+	private String type;
 
 	public MetaInfo() {
 
@@ -63,6 +64,14 @@ public class MetaInfo implements Serializable {
 
 	public void setResourceId(String resourceId) {
 		this.resourceId = resourceId;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }
