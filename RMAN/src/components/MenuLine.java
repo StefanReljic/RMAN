@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.LinkedList;
 
 import javax.swing.JFileChooser;
@@ -41,7 +40,7 @@ public class MenuLine extends JPanel {
 	public static final String CONTEXTUAL_HELP_LABEL = "Show Contextual Help";
 	public static final String ABOUT_LABEL = "About RMAN";
 	public static final String CANNOT_ADD_INFORMATION_RESOURCE_MESSAGE = "Cannot add information resource";
-	
+
 	public MenuLine() {
 		menuBar = new JMenuBar();
 
@@ -73,8 +72,8 @@ public class MenuLine extends JPanel {
 					ObjectOutputStream out = new ObjectOutputStream(bos);
 
 					out.writeObject(metaDescription);
-					metaDescriptionBytes = bos.toByteArray();
 					out.close();
+					metaDescriptionBytes = bos.toByteArray();
 					bos.close();
 				} catch (IOException ex) {
 					MessageBox messageBox = new MessageBox(new JFrame(), ex.getMessage());
@@ -85,13 +84,12 @@ public class MenuLine extends JPanel {
 				List<String> idColumns = new LinkedList<String>();
 				idColumns.add("INFORMATION_RESOURCE_SEQ.NEXTVAL");
 				List<Row> rows = serviceInterface.readObjects("dual", idColumns, null);
-				System.out.println(rows);
 				BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("INFORMATION_RESOURCE_SEQ.NEXTVAL").getValue();
-				
+
 				Row row = new Row();
 				row.setTableName("information_resource");
 				HashMap<String, Item> items = new HashMap<String, Item>();
-				
+
 				Item idItem = new Item("BigDecimal", nextId);
 				items.put("ID", idItem);
 
@@ -114,7 +112,7 @@ public class MenuLine extends JPanel {
 				items.put("META_DESCRIPTION", metaDescriptionBytesItem);
 
 				row.setItems(items);
-	
+
 				try {
 					serviceInterface.addObject(row);
 				} catch (SQLException e1) {

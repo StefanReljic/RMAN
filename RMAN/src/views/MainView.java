@@ -1,40 +1,29 @@
 package views;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.math.BigDecimal;
-import java.nio.file.Watchable;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
-
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
 import components.BasicGrid;
 import components.MenuLine;
@@ -42,14 +31,11 @@ import components.MessageBox;
 import interfaces.ServiceInterface;
 import meta.model.MetaDescription;
 import meta.model.MetaEntity;
-import meta.model.MetaInfo;
 import model.Item;
 import model.Row;
-import oracle.sql.BLOB;
-import services.AbstractService;
 import services.OracleService;
 
-public class MainView extends Dialog {
+public class MainView extends JDialog {
 
 	private static final long serialVersionUID = -8712372762807225105L;
 
@@ -66,14 +52,20 @@ public class MainView extends Dialog {
 
 	private ServiceInterface serviceInterface;
 
+	private JSplitPane splitPane;
+	private JScrollPane informationResourcesScrollPane;
+	private JScrollPane informationResourceScrollPane;
+
 	public MainView(JFrame parrent) {
 		super(parrent);
 
 		this.parrent = parrent;
 		this.menu = new MenuLine();
 		this.metaDescriptions = new HashMap<String, Item>();
+		this.grids = new LinkedList<BasicGrid>();
 		interfaces = new HashMap<String, ServiceInterface>();
 		this.selectedInformationResource = null;
+
 		setInterfaces();
 		setInformationResources(new BigDecimal(1));
 
@@ -85,22 +77,27 @@ public class MainView extends Dialog {
 
 				selectedInformationResource = informationResources.get(e.getNewLeadSelectionPath().getLastPathComponent());
 				setGrids();
+
+				for (BasicGrid grid : grids)
+					informationResourceScrollPane.add(grid);
 			}
 		});
 
-		JScrollPane informationResourcesScrollPane = new JScrollPane(informationResourceTree);
+		informationResourcesScrollPane = new JScrollPane(informationResourceTree);
+		informationResourcesScrollPane.setSize(informationResourceTree.getWidth() + 100, 800);
+		
 
-		JScrollPane informationResourceScrollPane = new JScrollPane();
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, informationResourcesScrollPane, informationResourceScrollPane);
-		splitPane.setBounds(0, 0, 400, 400);
+		informationResourceScrollPane = new JScrollPane();
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, informationResourcesScrollPane, informationResourceScrollPane);
+		splitPane.setSize(1000, 400);
 
 		JPanel panel = new JPanel();
-
-		panel.add(menu);
-		panel.setBounds(0, 0, 400, 400);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));		
+		panel.add(menu, BorderLayout.LINE_START);
 		panel.add(splitPane);
 
-		add(panel, BorderLayout.CENTER);
+		setSize( 5000, 1000);
+		add(panel);
 		setLocationRelativeTo(this.parrent);
 		pack();
 
@@ -176,11 +173,18 @@ public class MainView extends Dialog {
 
 		if (selectedInformatioResource != null) {
 
-			byte[] bytes = ((BLOB) metaDescriptions.get(selectedInformatioResource.getTableName()).getValue()).getBytes();
+			byte[] bytes = (byte[]) metaDescriptions.get(selectedInformatioResource.getTableName()).getValue();
 			MetaDescription metaDescription = MetaDescription.deserialize(bytes);
 			if (metaDescription != null) {
 
-				ServiceInterface serviceInterface = interfaces.get(metaDescription.getMetaInfo().getResourceId());
+				ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+				List<MetaEntity> metaEntities = metaDescription.getMetaEntities();
+				for (MetaEntity metaEntity : metaEntities) {
+
+					List<String> columns = metaEntity.getMetaRow().getItems().keySet().stream().collect(Collectors.toList());
+					List<Row> rows = serviceInterface.readObjects(metaEntity.getEntityName(), columns, null);
+					grids.add(new BasicGrid(rows));
+				}
 
 			} else {
 				MessageBox messageBox = new MessageBox(new JFrame(), METADESCRIPTION_DOES_NOT_EXIST);
@@ -193,16 +197,9 @@ public class MainView extends Dialog {
 		}
 	}
 
-	private BasicGrid newBasicGrid(Row informationResourceId) {
-
-		BasicGrid basicGrid = new BasicGrid();
-
-		return basicGrid;
-	}
-
 	private List<Row> getUserInformationResourceIds(BigDecimal userId) {
 
-		List<String> columns = new LinkedList<>();
+		List<String> columns = new LinkedList<String>();
 		columns.add("information_resource_id");
 		HashMap<String, Object> conditions = new HashMap<String, Object>();
 		conditions.put("user_id", userId);

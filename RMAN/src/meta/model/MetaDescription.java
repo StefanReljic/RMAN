@@ -56,11 +56,18 @@ public class MetaDescription implements Serializable {
 
 	public static MetaDescription deserialize(byte[] bytes) {
 
+		if (bytes == null)
+			return null;
 		ObjectInputStream ois;
 		try {
-			ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
-			return (MetaDescription) ois.readObject();
-			
+			ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+			ois = new ObjectInputStream(bis);
+			Object object = ois.readObject();
+			ois.close();
+			bis.close();
+
+			return (MetaDescription) object;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {

@@ -1,5 +1,6 @@
 package services;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.apache.poi.util.IOUtils;
 
 import model.Item;
 import model.Row;
@@ -195,7 +198,6 @@ public class OracleService extends AbstractService {
 			}
 			sql = sql.substring(0, sql.length() - 4);
 		}
-
 		List<Row> rows = new LinkedList<Row>();
 
 		try (Connection connection = getConnection();) {
@@ -218,13 +220,19 @@ public class OracleService extends AbstractService {
 						row.setTableName(name);
 						for (int i = 0; i < numberOfArguments; ++i) {
 
-							Item item = new Item(resultSetMetaData.getColumnClassName(i + 1), rs.getObject(i + 1));
+							Item item = null;
+							if (resultSetMetaData.getColumnClassName(i + 1).toLowerCase().contains("blob")) {
+								item = new Item("byte[]", IOUtils.toByteArray(rs.getBinaryStream(i + 1)));
+							} else
+								item = new Item(resultSetMetaData.getColumnClassName(i + 1), rs.getObject(i + 1));
 							row.getItems().put(columns.get(i), item);
 						}
 						rows.add(row);
 					}
 
 					return rows;
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		} catch (SQLException e) {
