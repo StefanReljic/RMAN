@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import meta.model.MetaDescription;
+import model.Item;
 import model.Row;
 
 public interface ServiceInterface {
 
 	public void addObject(Row object) throws Exception;
 
-	public void deleteObject(Row object);
+	public void deleteObject(Row object, List<String> columns);
 
 	public void updateObject(Row object);
 

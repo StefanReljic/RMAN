@@ -2,12 +2,13 @@ package model;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Row {
 
 	private String tableName;
-	private HashMap<String, Item> items;
+	private Map<String, Item> items;
 
 	public Row() {
 		this.items = new HashMap<>();
@@ -27,11 +28,11 @@ public class Row {
 		this.tableName = tableName;
 	}
 
-	public HashMap<String, Item> getItems() {
+	public Map<String, Item> getItems() {
 		return items;
 	}
 
-	public void setItems(HashMap<String, Item> items) {
+	public void setItems(Map<String, Item> items) {
 		this.items = items;
 	}
 
@@ -88,6 +89,21 @@ public class Row {
 		}
 
 		return super.equals(obj);
+	}
+
+	public Item findItemByName(String name) {
+
+		return getItems().get(name);
+	}
+
+	public Map<String, Class> getColumnTypes() {
+
+		Map<String, Class> types = new HashMap<String, Class>();
+		List<String> keys = getItems().keySet().stream().collect(Collectors.toList());
+		for (String key : keys)
+			types.put(key, getItems().get(key).getClassType());
+
+		return types;
 	}
 
 }

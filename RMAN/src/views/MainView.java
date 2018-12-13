@@ -1,7 +1,6 @@
 package views;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowEvent;
@@ -14,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -45,9 +44,9 @@ public class MainView extends JDialog {
 	private JFrame parrent;
 	private MenuLine menu;
 	private Map<String, ServiceInterface> interfaces;
-	private Map<String, Item> metaDescriptions;
+	private static Map<String, Item> metaDescriptions;
 	private Hashtable<String, Row> informationResources;
-	private Row selectedInformationResource;
+	private static Row selectedInformationResource;
 	private List<BasicGrid> grids;
 
 	private ServiceInterface serviceInterface;
@@ -61,10 +60,10 @@ public class MainView extends JDialog {
 
 		this.parrent = parrent;
 		this.menu = new MenuLine();
-		this.metaDescriptions = new HashMap<String, Item>();
+		metaDescriptions = new HashMap<String, Item>();
 		this.grids = new LinkedList<BasicGrid>();
 		interfaces = new HashMap<String, ServiceInterface>();
-		this.selectedInformationResource = null;
+		selectedInformationResource = null;
 
 		setInterfaces();
 		setInformationResources(new BigDecimal(1));
@@ -75,31 +74,32 @@ public class MainView extends JDialog {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 
-				selectedInformationResource = informationResources.get(e.getNewLeadSelectionPath().getLastPathComponent());
-				setGrids();
+				selectedInformationResource = informationResources.get("orcl");
+				setGridList();
 
+				JPanel panel = new JPanel();
+				panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 				for (BasicGrid grid : grids)
-					informationResourceScrollPane.add(grid);
+					panel.add(grid);
+				informationResourceScrollPane.setViewportView(panel);
+
 			}
 		});
 
 		informationResourcesScrollPane = new JScrollPane(informationResourceTree);
 		informationResourcesScrollPane.setSize(informationResourceTree.getWidth() + 100, 800);
-		
 
 		informationResourceScrollPane = new JScrollPane();
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, informationResourcesScrollPane, informationResourceScrollPane);
-		splitPane.setSize(1000, 400);
 
 		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));		
-		panel.add(menu, BorderLayout.LINE_START);
-		panel.add(splitPane);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.add(menu, BorderLayout.PAGE_START);
+		panel.add(splitPane, BorderLayout.PAGE_START);
 
-		setSize( 5000, 1000);
+		setSize(900, 500);
 		add(panel);
 		setLocationRelativeTo(this.parrent);
-		pack();
 
 		addWindowListener(new WindowListener() {
 
@@ -154,8 +154,8 @@ public class MainView extends JDialog {
 
 			for (Row ir : informationResources) {
 				if (ir.getItems().get("id").equals(id.getItems().get("information_resource_id"))) {
-					this.informationResources.put(ir.getTableName(), ir);
-					this.metaDescriptions.put(ir.getTableName(), ir.getItems().get("meta_description"));
+					this.informationResources.put(ir.getItems().get("name").getValue().toString(), ir);
+					metaDescriptions.put(ir.getItems().get("name").getValue().toString(), ir.getItems().get("meta_description"));
 					break;
 				}
 			}
@@ -167,13 +167,11 @@ public class MainView extends JDialog {
 		interfaces.put("information_resource", new OracleService("rman", "rman", "localhost", 1521, "testdb"));
 	}
 
-	private void setGrids() {
+	private void setGridList() {
 
-		Row selectedInformatioResource = informationResources.get("information_resource");
+		if (selectedInformationResource != null) {
 
-		if (selectedInformatioResource != null) {
-
-			byte[] bytes = (byte[]) metaDescriptions.get(selectedInformatioResource.getTableName()).getValue();
+			byte[] bytes = (byte[]) metaDescriptions.get(selectedInformationResource.findItemByName("name").getValue().toString()).getValue();
 			MetaDescription metaDescription = MetaDescription.deserialize(bytes);
 			if (metaDescription != null) {
 
@@ -207,12 +205,9 @@ public class MainView extends JDialog {
 		return serviceInterface.readObjects("u_ir", columns, conditions);
 	}
 
-	private List<Object> getInformationResourcesIds(List<Row> informationResources) {
+	public static Item getMetaDescription() {
 
-		List<HashMap<String, Item>> listOfItems = informationResources.stream().map(ir -> ir.getItems()).collect(Collectors.toList());
-		List<Object> ids = listOfItems.stream().map(i -> i.get("id").getValue()).collect(Collectors.toList());
-
-		return ids;
+		return metaDescriptions.get(selectedInformationResource.findItemByName("name").getValue().toString());
 	}
 
 }

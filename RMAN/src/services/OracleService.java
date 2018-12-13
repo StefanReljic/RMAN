@@ -110,23 +110,20 @@ public class OracleService extends AbstractService {
 	}
 
 	@Override
-	public void deleteObject(Row object) {
+	public void deleteObject(Row object, List<String> columns) {
 
-		List<String> columns = object.getItems().keySet().stream().collect(Collectors.toList());
 		String sql = "delete from " + object.getTableName() + " where ";
 
 		for (String column : columns)
-			if (column.startsWith("id#"))
-				sql += column.split("#")[1] + " = ? and ";
+			sql += column + " = ? and ";
 
 		sql = sql.substring(0, sql.length() - 4);
 
 		try (Connection connection = getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-				statement.setString(1, object.getTableName());
 				for (int i = 0; i < columns.size(); ++i)
-					statement.setObject(i + 2, object.getItems().get(columns.get(i)));
+					statement.setObject(i + 1, object.getItems().get(columns.get(i)).getValue());
 				try (ResultSet rs = statement.executeQuery()) {
 				}
 			}

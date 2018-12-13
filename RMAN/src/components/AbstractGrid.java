@@ -25,5 +25,21 @@ public abstract class AbstractGrid extends JPanel {
 	public void setGrid(JTable grid) {
 		this.grid = grid;
 	}
+	
+	abstract void createComponent();
+
+	@Override
+	public String toString() {
+
+		String string = "";
+		
+		if (rows == null)
+			return null;
+		
+		for (Row row : rows)
+			string += row.toString() + "\n";
+
+		return string;
+	}
 
 }
