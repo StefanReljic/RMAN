@@ -17,8 +17,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 
-import org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength;
-
 import interfaces.ServiceInterface;
 import meta.model.MetaDescription;
 import meta.model.MetaEntity;
@@ -66,6 +64,30 @@ public class BasicGrid extends AbstractGrid {
 		add(getButtonLayout(), BorderLayout.LINE_START);
 		add(this.grid.getTableHeader());
 		add(this.grid);
+	}
+
+	public void refreshGrid() {
+
+		if (rows == null || rows.size() == 0)
+			return;
+
+		Object[] columnNames = rows.get(0).getItems().keySet().stream().collect(Collectors.toList()).toArray();
+		Object[][] objects = new Object[rows.size()][columnNames.length];
+
+		for (int i = 0; i < rows.size(); ++i)
+			for (int j = 0; j < columnNames.length; ++j)
+				objects[i][j] = rows.get(i).getItems().get(columnNames[j]).getValue();
+
+		Component[] panelComponents = getComponents();
+		int i = 0;
+		for (i = 0; i < panelComponents.length; ++i)
+			if (panelComponents[i].equals(this.grid))
+				break;
+
+		this.grid = new JTable(objects, columnNames);
+		remove(i);
+		add(this.grid, i);
+		updateUI();
 	}
 
 	private Component getButtonLayout() {
@@ -126,6 +148,7 @@ public class BasicGrid extends AbstractGrid {
 			serviceInterface.deleteObject(row, metaEntityIds);
 			this.rows.remove(row);
 		}
+		refreshGrid();
 	}
 
 	private void saveRow() {
