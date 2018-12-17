@@ -74,4 +74,9 @@ public class MetaEntity implements Serializable {
 		this.relations = relations;
 	}
 
+	@Override
+	public String toString() {
+
+		return getEntityName();
+	}
 }

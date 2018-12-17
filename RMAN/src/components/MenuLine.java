@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.LinkedList;
 
 import javax.swing.JFileChooser;
@@ -88,7 +89,7 @@ public class MenuLine extends JPanel {
 
 				Row row = new Row();
 				row.setTableName("information_resource");
-				HashMap<String, Item> items = new HashMap<String, Item>();
+				Map<String, Item> items = new HashMap<String, Item>();
 
 				Item idItem = new Item("BigDecimal", nextId);
 				items.put("ID", idItem);

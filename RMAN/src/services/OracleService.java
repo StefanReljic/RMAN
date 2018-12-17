@@ -7,9 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -172,7 +172,7 @@ public class OracleService extends AbstractService {
 	}
 
 	@Override
-	public List<Row> readObjects(String name, List<String> columns, HashMap<String, Object> conditions) {
+	public List<Row> readObjects(String name, List<String> columns, Map<String, Object> conditions) {
 
 		String columnString = "";
 		if (columns == null || columns.size() == 0)

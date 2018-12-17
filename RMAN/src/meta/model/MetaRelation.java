@@ -1,23 +1,23 @@
 package meta.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Map;
 
 public class MetaRelation implements Serializable {
 
 	private static final long serialVersionUID = -3326846988069406450L;
 	
 	private String parrentTable;
-	private HashMap<String, MetaProperty> parrentIds;
+	private Map<String, MetaProperty> parrentIds;
 	private String childTable;
-	private HashMap<String, MetaProperty> childIds;
+	private Map<String, MetaProperty> childIds;
 
 	public MetaRelation() {
 		super();
 	}
 
-	public MetaRelation(String parrentTable, HashMap<String, MetaProperty> parrentIds, String childTable,
-			HashMap<String, MetaProperty> childIds) {
+	public MetaRelation(String parrentTable, Map<String, MetaProperty> parrentIds, String childTable,
+			Map<String, MetaProperty> childIds) {
 		super();
 		this.parrentTable = parrentTable;
 		this.parrentIds = parrentIds;
@@ -33,11 +33,11 @@ public class MetaRelation implements Serializable {
 		this.parrentTable = parrentTable;
 	}
 
-	public HashMap<String, MetaProperty> getParrentIds() {
+	public Map<String, MetaProperty> getParrentIds() {
 		return parrentIds;
 	}
 
-	public void setParrentIds(HashMap<String, MetaProperty> parrentIds) {
+	public void setParrentIds(Map<String, MetaProperty> parrentIds) {
 		this.parrentIds = parrentIds;
 	}
 
@@ -49,11 +49,11 @@ public class MetaRelation implements Serializable {
 		this.childTable = childTable;
 	}
 
-	public HashMap<String, MetaProperty> getChildIds() {
+	public Map<String, MetaProperty> getChildIds() {
 		return childIds;
 	}
 
-	public void setChildIds(HashMap<String, MetaProperty> childIds) {
+	public void setChildIds(Map<String, MetaProperty> childIds) {
 		this.childIds = childIds;
 	}
 

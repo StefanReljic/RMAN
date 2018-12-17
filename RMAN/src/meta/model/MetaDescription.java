@@ -75,4 +75,24 @@ public class MetaDescription implements Serializable {
 		}
 		return null;
 	}
+
+	public List<ChildParrentModel> getParrentChildModels() {
+
+		List<ChildParrentModel> result = new LinkedList<ChildParrentModel>();
+
+		for (MetaEntity metaEntity : metaEntities) {
+
+			List<MetaEntity> parrentChildModelParrents = new LinkedList<MetaEntity>();
+
+			List<MetaRelation> parrentRelations = metaEntity.getRelations();
+			for (MetaRelation relation : parrentRelations) {
+				MetaEntity parrentEntity = findMetaEntityByName(relation.getParrentTable());
+				parrentChildModelParrents.add(parrentEntity);
+			}
+			result.add(new ChildParrentModel(metaEntity, parrentChildModelParrents));
+		}
+
+		return result;
+	}
+
 }

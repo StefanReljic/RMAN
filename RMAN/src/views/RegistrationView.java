@@ -2,7 +2,6 @@ package views;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dialog;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.FocusEvent;
@@ -13,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -235,7 +235,7 @@ public class RegistrationView extends JDialog {
 		String lastname = lastnameField.getText();
 
 		Row row = new Row();
-		HashMap<String, Item> items = new HashMap<String, Item>();
+		Map<String, Item> items = new HashMap<String, Item>();
 
 		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 

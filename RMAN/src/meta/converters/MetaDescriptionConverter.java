@@ -55,7 +55,7 @@ public class MetaDescriptionConverter {
 			 * Converts meta row and its meta properties.
 			 */
 			MetaRow metaRowObject = entity.getMetaRow();
-			HashMap<String, MetaProperty> metaRowItems = metaRowObject.getItems();
+			Map<String, MetaProperty> metaRowItems = metaRowObject.getItems();
 			List<String> keys = metaRowItems.keySet().stream().collect(Collectors.toList());
 			for (String key : keys) {
 
@@ -94,7 +94,7 @@ public class MetaDescriptionConverter {
 				JSONArray metaParrentIds = new JSONArray();
 				JSONArray metaChildIds = new JSONArray();
 
-				HashMap<String, MetaProperty> parrentIds = relation.getParrentIds();
+				Map<String, MetaProperty> parrentIds = relation.getParrentIds();
 				keys = parrentIds.keySet().stream().collect(Collectors.toList());
 				for (String key : keys) {
 
@@ -107,7 +107,7 @@ public class MetaDescriptionConverter {
 					metaParrentIds.put(metaProperty);
 				}
 
-				HashMap<String, MetaProperty> childIds = relation.getChildIds();
+				Map<String, MetaProperty> childIds = relation.getChildIds();
 				keys = childIds.keySet().stream().collect(Collectors.toList());
 				for (String key : keys) {
 
@@ -211,8 +211,8 @@ public class MetaDescriptionConverter {
 				JSONArray childIds = metaRelation.getJSONArray("childIds");
 
 				MetaRelation metaRelationObject = new MetaRelation();
-				HashMap<String, MetaProperty> parrentIdObjects = new HashMap<String, MetaProperty>();
-				HashMap<String, MetaProperty> childIdObjects = new HashMap<String, MetaProperty>();
+				Map<String, MetaProperty> parrentIdObjects = new HashMap<String, MetaProperty>();
+				Map<String, MetaProperty> childIdObjects = new HashMap<String, MetaProperty>();
 
 				for (int k = 0; k < parrentIds.length(); ++k) {
 

@@ -2,6 +2,7 @@ package meta.model;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MetaRow implements Serializable {
 
@@ -10,21 +11,21 @@ public class MetaRow implements Serializable {
 	/**
 	 * String is name of the property, MetaItem is representation of property type.
 	 */
-	private HashMap<String, MetaProperty> items;
+	private Map<String, MetaProperty> items;
 
 	public MetaRow() {
 		this.items = new HashMap<String, MetaProperty>();
 	}
 
-	public MetaRow(HashMap<String, MetaProperty> items) {
+	public MetaRow(Map<String, MetaProperty> items) {
 		this.items = items;
 	}
 
-	public HashMap<String, MetaProperty> getItems() {
+	public Map<String, MetaProperty> getItems() {
 		return items;
 	}
 
-	public void setItems(HashMap<String, MetaProperty> items) {
+	public void setItems(Map<String, MetaProperty> items) {
 		this.items = items;
 	}
 

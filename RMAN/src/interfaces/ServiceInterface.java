@@ -1,11 +1,10 @@
 package interfaces;
 
 import java.sql.Connection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import meta.model.MetaDescription;
-import model.Item;
 import model.Row;
 
 public interface ServiceInterface {
@@ -16,7 +15,7 @@ public interface ServiceInterface {
 
 	public void updateObject(Row object);
 
-	public List<Row> readObjects(String name, List<String> columns, HashMap<String, Object> conditions);
+	public List<Row> readObjects(String name, List<String> columns, Map<String, Object> conditions);
 
 	public Connection getConnection();
 

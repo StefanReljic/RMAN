@@ -14,7 +14,7 @@ public class Row {
 		this.items = new HashMap<>();
 	}
 
-	public Row(String tableName, HashMap<String, Item> items) {
+	public Row(String tableName, Map<String, Item> items) {
 		super();
 		this.tableName = tableName;
 		this.items = items;
