@@ -11,7 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -226,7 +226,7 @@ public class LoginView extends Dialog {
 
 		ServiceInterface oracleService = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 
-		Map<String, Object> objects = new HashMap<String, Object>();
+		Map<String, Object> objects = new LinkedHashMap<String, Object>();
 		objects.put("username", username);
 		objects.put("password", password);
 		List<Row> result = oracleService.readObjects("user_table", objects.keySet().stream().collect(Collectors.toList()), objects);

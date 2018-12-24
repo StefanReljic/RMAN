@@ -21,6 +21,6 @@ public interface ServiceInterface {
 
 	public MetaDescription getInformationResourceDescription();
 
-	public void setInformationResourceDescription();
+	public MetaDescription readInformationResourceDescription();
 
 }

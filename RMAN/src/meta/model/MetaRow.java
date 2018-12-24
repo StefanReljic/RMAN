@@ -1,7 +1,7 @@
 package meta.model;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MetaRow implements Serializable {
@@ -14,7 +14,7 @@ public class MetaRow implements Serializable {
 	private Map<String, MetaProperty> items;
 
 	public MetaRow() {
-		this.items = new HashMap<String, MetaProperty>();
+		this.items = new LinkedHashMap<String, MetaProperty>();
 	}
 
 	public MetaRow(Map<String, MetaProperty> items) {

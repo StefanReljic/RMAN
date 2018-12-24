@@ -15,10 +15,27 @@ import java.util.stream.IntStream;
 
 import org.apache.poi.util.IOUtils;
 
+import meta.model.MetaDescription;
+import meta.model.MetaEntity;
+import meta.model.MetaInfo;
+import meta.model.MetaProperty;
+import meta.model.MetaRelation;
+import meta.model.MetaRow;
 import model.Item;
 import model.Row;
 
 public class OracleService extends AbstractService {
+
+	private static final String SQL_READ_COLUMNS = "select table_name, column_name, data_type from user_tab_cols";
+	private static final String SQL_READ_RELATIONS = "select prim.table_name, prim.column_name, ucc.table_name, ucc.column_name from user_constraints uc "
+			+ "join user_cons_columns ucc " + "    on uc.constraint_name = ucc.constraint_name " + "join "
+			+ "    (select ucp.constraint_name ,uccp.table_name, uccp.column_name, uccp.position from user_constraints ucp join user_cons_columns uccp "
+			+ "            on ucp.constraint_name = uccp.constraint_name) prim "
+			+ "    on prim.constraint_name = uc.r_constraint_name and prim.position = ucc.position " + "where uc.constraint_type = 'R' "
+			+ "order by ucc.table_name ";
+
+	private static final String SQL_READ_PRIMARY_KEYS = "select ucc.table_name, ucc.column_name from user_cons_columns ucc "
+			+ "join user_constraints uc on ucc.constraint_name = uc.constraint_name where constraint_type='P' order by table_name";
 
 	private String user;
 	private String password;
@@ -256,4 +273,161 @@ public class OracleService extends AbstractService {
 		return connection;
 	}
 
+	@Override
+	public MetaDescription getInformationResourceDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MetaDescription readInformationResourceDescription() {
+
+		String oldTableName = "";
+		MetaDescription metaDescription = new MetaDescription();
+		MetaInfo metaInfo = new MetaInfo(user, password, host, port, serviceId);
+
+		List<MetaEntity> metaEntities = new LinkedList<>();
+
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement statement = connection.prepareStatement(SQL_READ_COLUMNS)) {
+				try (ResultSet rs = statement.executeQuery()) {
+
+					MetaEntity metaEntity = null;
+					MetaRow metaRow = null;
+
+					while (rs.next()) {
+
+						String tableName = rs.getString(1);
+						String columnName = rs.getString(2);
+						String columnType = rs.getString(3);
+
+						if (oldTableName.equals("")) {
+
+							oldTableName = tableName;
+							metaEntity = new MetaEntity();
+							metaRow = new MetaRow();
+
+							MetaProperty metaProperty = new MetaProperty();
+							metaProperty.setType(columnType);
+
+							metaRow.getItems().put(columnName, metaProperty);
+							metaEntity.setEntityName(tableName);
+							metaEntity.setMetaRow(metaRow);
+
+						} else if (oldTableName.equals(tableName)) {
+							MetaProperty metaProperty = new MetaProperty();
+							metaProperty.setType(columnType);
+							metaEntity.getMetaRow().getItems().put(columnName, metaProperty);
+
+						} else {
+							metaEntities.add(metaEntity);
+							metaEntity = new MetaEntity();
+							metaRow = new MetaRow();
+							oldTableName = tableName;
+
+							MetaProperty metaProperty = new MetaProperty();
+							metaProperty.setType(columnType);
+
+							metaRow.getItems().put(columnName, metaProperty);
+							metaEntity.setEntityName(tableName);
+							metaEntity.setMetaRow(metaRow);
+						}
+
+					}
+
+					metaEntities.add(metaEntity);
+				}
+			}
+			try (PreparedStatement statement = connection.prepareStatement(SQL_READ_RELATIONS)) {
+				try (ResultSet rs = statement.executeQuery()) {
+
+					String oldParrent = "";
+					String oldChild = "";
+					MetaEntity metaEntity = null;
+					MetaRelation metaRelation = null;
+
+					while (rs.next()) {
+
+						String parrentTable = rs.getString(1);
+						String parrentId = rs.getString(2);
+						String childTable = rs.getString(3);
+						String childId = rs.getString(4);
+
+						if (oldParrent.equals("") && oldChild.equals("")) {
+
+							oldParrent = parrentTable;
+							oldChild = childTable;
+
+							for (MetaEntity entity : metaEntities)
+								if (entity.getEntityName().equals(parrentTable)) {
+									metaEntity = entity;
+									break;
+								}
+
+							metaRelation = new MetaRelation();
+							metaRelation.setParrentTable(parrentTable);
+							metaRelation.getParrentIds().put(parrentId, new MetaProperty());
+							metaRelation.setChildTable(childTable);
+							metaRelation.getChildIds().put(childId, new MetaProperty());
+
+							metaEntity.getRelations().add(metaRelation);
+
+						} else if (oldParrent.equals(parrentTable) && oldChild.equals(childTable)) {
+
+							metaRelation.getParrentIds().put(parrentId, new MetaProperty());
+							metaRelation.getChildIds().put(childId, new MetaProperty());
+
+							metaEntity.getRelations().add(metaRelation);
+
+						} else {
+
+							oldParrent = parrentTable;
+							oldChild = childTable;
+
+							for (MetaEntity entity : metaEntities)
+								if (entity.getEntityName().equals(parrentTable)) {
+									metaEntity = entity;
+									break;
+								}
+
+							metaRelation = new MetaRelation();
+							metaRelation.setParrentTable(parrentTable);
+							metaRelation.getParrentIds().put(parrentId, new MetaProperty());
+							metaRelation.setChildTable(childTable);
+							metaRelation.getChildIds().put(childId, new MetaProperty());
+
+							metaEntity.getRelations().add(metaRelation);
+						}
+
+					}
+				}
+			}
+
+			try (PreparedStatement statement = connection.prepareStatement(SQL_READ_PRIMARY_KEYS)) {
+				try (ResultSet rs = statement.executeQuery()) {
+
+					while (rs.next()) {
+
+						String tableName = rs.getString(1);
+						String columnName = rs.getString(2);
+
+						for (MetaEntity entity : metaEntities)
+							if (entity.getEntityName().equals(tableName)) {
+								entity.getMetaIds().put(columnName, new MetaProperty());
+							}
+					}
+				}
+			}
+
+			metaDescription.setMetaInfo(metaInfo);
+			metaDescription.setMetaEntities(metaEntities);
+
+			return metaDescription;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }

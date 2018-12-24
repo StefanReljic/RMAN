@@ -4,11 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -19,6 +20,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import components.MenuLine;
 import interfaces.ServiceInterface;
@@ -35,6 +37,7 @@ public class MainView extends JDialog {
 	private Map<String, ServiceInterface> interfaces;
 	private Hashtable<String, Row> informationResources;
 	private MetaDescription selectedInformationResourceMetaDescription;
+	private List<ChildParrentModel> childParrentModels;
 
 	private ServiceInterface serviceInterface;
 
@@ -52,39 +55,61 @@ public class MainView extends JDialog {
 
 		this.parrent = parrent;
 		this.menu = new MenuLine();
-		this.interfaces = new HashMap<String, ServiceInterface>();
+		this.interfaces = new LinkedHashMap<String, ServiceInterface>();
 
-		metaDescriptions = new HashMap<String, Item>();
+		metaDescriptions = new LinkedHashMap<String, Item>();
 		selectedInformationResource = null;
 
 		setInterfaces();
 		setInformationResources(new BigDecimal(1));
 
-		JTree informationResourceTree = new JTree(informationResources);
+		JTree informationResourceTree = new JTree(getNodes());
 		informationResourceTree.addTreeSelectionListener(new TreeSelectionListener() {
 
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 
-				selectedInformationResource = informationResources.get(informationResourceTree.getSelectionPath().getLastPathComponent().toString());
+				if (informationResourceTree.getSelectionPath().getLastPathComponent().toString().trim().equals(""))
+					return;
 
-				byte[] bytes = (byte[]) metaDescriptions.get(selectedInformationResource.findItemByName("name").getValue().toString()).getValue();
-				selectedInformationResourceMetaDescription = MetaDescription.deserialize(bytes);
+				if (informationResourceTree.getSelectionPath().getPathCount() == 2) {
 
-				List<ChildParrentModel> childParrentModel = selectedInformationResourceMetaDescription.getParrentChildModels();
-				ChildParrentView childParrentView = new ChildParrentView(childParrentModel.get(0));
+					selectedInformationResource = informationResources
+							.get(informationResourceTree.getSelectionPath().getLastPathComponent().toString());
 
-				informationResourceScrollPane.setViewportView(childParrentView);
+					byte[] bytes = (byte[]) metaDescriptions.get(selectedInformationResource.findItemByName("name").getValue().toString()).getValue();
+					selectedInformationResourceMetaDescription = MetaDescription.deserialize(bytes);
+
+					childParrentModels = selectedInformationResourceMetaDescription.getParrentChildModels();
+
+					DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) informationResourceTree.getLastSelectedPathComponent();
+					for (ChildParrentModel model : childParrentModels)
+						selectedNode.add(new DefaultMutableTreeNode(model.getChild().getEntityName()));
+
+					informationResourceTree.expandPath(informationResourceTree.getSelectionPath());
+					informationResourcesScrollPane.setSize(200, 800);
+					splitPane.setDividerLocation(200);
+				
+				} else {
+
+					String name = informationResourceTree.getSelectionPath().getLastPathComponent().toString();
+					ChildParrentModel childParrentModel = childParrentModels.stream().filter(model -> model.getChild().getEntityName().equals(name))
+							.findFirst().get();
+					ChildParrentView childParrentView = new ChildParrentView(childParrentModel);
+					informationResourceScrollPane.setViewportView(childParrentView);
+				}
 
 			}
 		});
 
 		informationResourcesScrollPane = new JScrollPane(informationResourceTree);
+		
 		informationResourcesScrollPane.setSize(informationResourceTree.getWidth() + 100, 800);
 
 		informationResourceScrollPane = new JScrollPane();
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, informationResourcesScrollPane, informationResourceScrollPane);
-
+		
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.add(menu, BorderLayout.PAGE_START);
@@ -127,6 +152,16 @@ public class MainView extends JDialog {
 		});
 	}
 
+	private DefaultMutableTreeNode getNodes() {
+
+		DefaultMutableTreeNode top = new DefaultMutableTreeNode();
+		List<String> keys = informationResources.keySet().stream().collect(Collectors.toList());
+		for (String key : keys)
+			top.add(new DefaultMutableTreeNode(key));
+
+		return top;
+	}
+
 	private void setInformationResources(BigDecimal userId) {
 
 		informationResources = new Hashtable<String, Row>();
@@ -164,7 +199,7 @@ public class MainView extends JDialog {
 
 		List<String> columns = new LinkedList<String>();
 		columns.add("information_resource_id");
-		Map<String, Object> conditions = new HashMap<String, Object>();
+		Map<String, Object> conditions = new LinkedHashMap<String, Object>();
 		conditions.put("user_id", userId);
 
 		return serviceInterface.readObjects("u_ir", columns, conditions);

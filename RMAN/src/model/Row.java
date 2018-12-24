@@ -1,6 +1,6 @@
 package model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ public class Row {
 	private Map<String, Item> items;
 
 	public Row() {
-		this.items = new HashMap<>();
+		this.items = new LinkedHashMap<>();
 	}
 
 	public Row(String tableName, Map<String, Item> items) {
@@ -98,7 +98,7 @@ public class Row {
 
 	public Map<String, Class> getColumnTypes() {
 
-		Map<String, Class> types = new HashMap<String, Class>();
+		Map<String, Class> types = new LinkedHashMap<String, Class>();
 		List<String> keys = getItems().keySet().stream().collect(Collectors.toList());
 		for (String key : keys)
 			types.put(key, getItems().get(key).getClassType());

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +193,7 @@ public class MetaDescriptionConverter {
 				metaRowObject.getItems().put(metaProperty.getString("propertyName"), metaPropertyObject);
 			}
 
-			Map<String, MetaProperty> metaIdsObject = new HashMap<String, MetaProperty>();
+			Map<String, MetaProperty> metaIdsObject = new LinkedHashMap<String, MetaProperty>();
 			for (int j = 0; j < metaIds.length(); ++j) {
 
 				JSONObject metaProperty = metaIds.getJSONObject(j);
@@ -211,8 +211,8 @@ public class MetaDescriptionConverter {
 				JSONArray childIds = metaRelation.getJSONArray("childIds");
 
 				MetaRelation metaRelationObject = new MetaRelation();
-				Map<String, MetaProperty> parrentIdObjects = new HashMap<String, MetaProperty>();
-				Map<String, MetaProperty> childIdObjects = new HashMap<String, MetaProperty>();
+				Map<String, MetaProperty> parrentIdObjects = new LinkedHashMap<String, MetaProperty>();
+				Map<String, MetaProperty> childIdObjects = new LinkedHashMap<String, MetaProperty>();
 
 				for (int k = 0; k < parrentIds.length(); ++k) {
 

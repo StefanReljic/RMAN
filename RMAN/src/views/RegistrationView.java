@@ -9,7 +9,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -235,7 +235,7 @@ public class RegistrationView extends JDialog {
 		String lastname = lastnameField.getText();
 
 		Row row = new Row();
-		Map<String, Item> items = new HashMap<String, Item>();
+		Map<String, Item> items = new LinkedHashMap<String, Item>();
 
 		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 

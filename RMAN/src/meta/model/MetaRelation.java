@@ -1,12 +1,13 @@
 package meta.model;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MetaRelation implements Serializable {
 
 	private static final long serialVersionUID = -3326846988069406450L;
-	
+
 	private String parrentTable;
 	private Map<String, MetaProperty> parrentIds;
 	private String childTable;
@@ -14,10 +15,12 @@ public class MetaRelation implements Serializable {
 
 	public MetaRelation() {
 		super();
+
+		this.parrentIds = new LinkedHashMap<String, MetaProperty>();
+		this.childIds = new LinkedHashMap<String, MetaProperty>();
 	}
 
-	public MetaRelation(String parrentTable, Map<String, MetaProperty> parrentIds, String childTable,
-			Map<String, MetaProperty> childIds) {
+	public MetaRelation(String parrentTable, Map<String, MetaProperty> parrentIds, String childTable, Map<String, MetaProperty> childIds) {
 		super();
 		this.parrentTable = parrentTable;
 		this.parrentIds = parrentIds;
@@ -55,6 +58,16 @@ public class MetaRelation implements Serializable {
 
 	public void setChildIds(Map<String, MetaProperty> childIds) {
 		this.childIds = childIds;
+	}
+
+	@Override
+	public String toString() {
+
+		String result = "";
+		result += parrentTable + " : " + parrentIds.keySet();
+		result += childTable + " : " + childIds.keySet();
+
+		return result;
 	}
 
 }

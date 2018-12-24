@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedList;
@@ -88,8 +88,8 @@ public class MenuLine extends JPanel {
 				BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("INFORMATION_RESOURCE_SEQ.NEXTVAL").getValue();
 
 				Row row = new Row();
-				row.setTableName("information_resource");
-				Map<String, Item> items = new HashMap<String, Item>();
+				row.setTableName("INFORMATION_RESOURCE");
+				Map<String, Item> items = new LinkedHashMap<String, Item>();
 
 				Item idItem = new Item("BigDecimal", nextId);
 				items.put("ID", idItem);
@@ -114,8 +114,18 @@ public class MenuLine extends JPanel {
 
 				row.setItems(items);
 
+				Item uir_ir = new Item("BigDecimal", nextId);
+				Item uir_user = new Item("BigDecimal", 1);
+				Row uirRow = new Row();
+				Map<String, Item> uirItems = new LinkedHashMap<String, Item>();
+				uirItems.put("INFORMATION_RESOURCE_ID", uir_ir);
+				uirItems.put("USER_ID", uir_user);
+				uirRow.setItems(uirItems);
+				uirRow.setTableName("U_IR");
+
 				try {
 					serviceInterface.addObject(row);
+					serviceInterface.addObject(uirRow);
 				} catch (SQLException e1) {
 					MessageBox messageBox = new MessageBox(new JFrame(), CANNOT_ADD_INFORMATION_RESOURCE_MESSAGE);
 					messageBox.setVisible(true);
