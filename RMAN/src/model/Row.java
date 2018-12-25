@@ -96,9 +96,9 @@ public class Row {
 		return getItems().get(name);
 	}
 
-	public Map<String, Class> getColumnTypes() {
+	public Map<String, Class<?>> getColumnTypes() {
 
-		Map<String, Class> types = new LinkedHashMap<String, Class>();
+		Map<String, Class<?>> types = new LinkedHashMap<String, Class<?>>();
 		List<String> keys = getItems().keySet().stream().collect(Collectors.toList());
 		for (String key : keys)
 			types.put(key, getItems().get(key).getClassType());

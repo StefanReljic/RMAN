@@ -3,7 +3,7 @@ package model;
 public class Item {
 
 	String type;
-	Class classType;
+	Class<?> classType;
 	Object value;
 
 	public Item(String type, Object value) {
@@ -22,11 +22,11 @@ public class Item {
 		this.type = type;
 	}
 
-	public Class getClassType() {
+	public Class<?> getClassType() {
 		return classType;
 	}
 
-	public void setClassType(Class classType) {
+	public void setClassType(Class<?> classType) {
 		this.classType = classType;
 	}
 

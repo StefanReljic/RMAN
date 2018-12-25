@@ -7,13 +7,13 @@ public class MetaProperty implements Serializable {
 	private static final long serialVersionUID = -6459843494006185283L;
 	
 	private String type;
-	private Class classType;
+	private Class<?> classType;
 
 	public MetaProperty() {
 		super();
 	}
 
-	public MetaProperty(String type, Class classType) {
+	public MetaProperty(String type, Class<?> classType) {
 
 		this.type = type;
 		this.classType = classType;
@@ -30,11 +30,11 @@ public class MetaProperty implements Serializable {
 		this.type = type;
 	}
 
-	public Class getClassType() {
+	public Class<?> getClassType() {
 		return classType;
 	}
 
-	public void setClassType(Class classType) {
+	public void setClassType(Class<?> classType) {
 		this.classType = classType;
 	}
 
