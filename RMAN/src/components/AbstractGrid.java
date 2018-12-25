@@ -26,8 +26,10 @@ public abstract class AbstractGrid extends JPanel {
 		this.grid = grid;
 	}
 	
-	abstract void createComponent();
-
+	protected abstract void createComponent();
+	
+    protected abstract Object[][] rowsToMatrix();
+	
 	@Override
 	public String toString() {
 

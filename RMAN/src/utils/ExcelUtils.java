@@ -1,9 +1,6 @@
 package utils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.function.Supplier;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -25,6 +22,12 @@ public class ExcelUtils {
 	public static final String DEFAULT_SHEET_NAME = "sheet1";
 	public static final String EXCEL_EXTENSION = ".xlsx";
 
+	/**
+	 * Returns byte representation of created excel.
+	 * 
+	 * @param valueMatrix
+	 * @return
+	 */
 	public byte[] exportToByteArray(Object[][] valueMatrix) {
 		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 			XSSFSheet sheet = workbook.createSheet(DEFAULT_SHEET_NAME);
@@ -137,6 +140,16 @@ public class ExcelUtils {
 		}
 	}
 
+	/**
+	 * Returns cell style.
+	 * 
+	 * @param workbook
+	 * @param row
+	 * @param col
+	 * @param rowCount
+	 * @param columnCount
+	 * @return
+	 */
 	private XSSFCellStyle initCellStyle(XSSFWorkbook workbook, int row, int col, int rowCount, int columnCount) {
 		XSSFCellStyle headerCellStyle = workbook.createCellStyle();
 		if (row == 0) {

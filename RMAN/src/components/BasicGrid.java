@@ -51,7 +51,23 @@ public class BasicGrid extends AbstractGrid {
 	}
 
 	@Override
-	void createComponent() {
+	protected Object[][] rowsToMatrix() {
+
+		if (rows == null || rows.size() == 0)
+			return null;
+
+		Object[][] matrix = new Object[rows.size()][rows.get(0).getItems().size()];
+		List<String> keys = rows.get(0).getItems().keySet().stream().collect(Collectors.toList());
+
+		for (int i = 0; i < rows.size(); ++i)
+			for (int j = 0; j < keys.size(); ++j)
+				matrix[i][j] = rows.get(i).getItems().get(keys.get(j));
+
+		return matrix;
+	}
+
+	@Override
+	protected void createComponent() {
 
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setSize(new Dimension(400, 500));
