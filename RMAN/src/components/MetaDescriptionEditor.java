@@ -32,6 +32,7 @@ public class MetaDescriptionEditor extends JPanel {
 
 	private void createOracleView() {
 
+		
 	}
 
 	public InformationResourceType getInformationResourceType() {

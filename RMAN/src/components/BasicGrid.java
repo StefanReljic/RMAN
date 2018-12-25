@@ -7,6 +7,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,14 +17,20 @@ import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+
+import com.google.common.io.Files;
 
 import interfaces.ServiceInterface;
 import meta.model.MetaDescription;
 import meta.model.MetaEntity;
 import model.Row;
 import services.OracleService;
+import utils.ExcelUtils;
 import views.AddRowView;
 import views.MainView;
 
@@ -31,6 +40,7 @@ public class BasicGrid extends AbstractGrid {
 	private static final String BASIC_GRID_ADD = "Add";
 	private static final String BASIC_GRID_REMOVE = "Remove";
 	private static final String BASIC_GRID_SAVE = "Save";
+	private static final String EXPORT_TO_EXCEL = "Export";
 
 	public BasicGrid(List<Row> rows) {
 
@@ -56,12 +66,15 @@ public class BasicGrid extends AbstractGrid {
 		if (rows == null || rows.size() == 0)
 			return null;
 
-		Object[][] matrix = new Object[rows.size()][rows.get(0).getItems().size()];
 		List<String> keys = rows.get(0).getItems().keySet().stream().collect(Collectors.toList());
+		Object[][] matrix = new Object[rows.size() + 1][keys.size()];
 
-		for (int i = 0; i < rows.size(); ++i)
+		for (int j = 0; j < keys.size(); ++j)
+			matrix[0][j] = keys.get(j);
+
+		for (int i = 1; i < rows.size() + 1; ++i)
 			for (int j = 0; j < keys.size(); ++j)
-				matrix[i][j] = rows.get(i).getItems().get(keys.get(j));
+				matrix[i][j] = rows.get(i - 1).getItems().get(keys.get(j)).getValue();
 
 		return matrix;
 	}
@@ -123,6 +136,10 @@ public class BasicGrid extends AbstractGrid {
 		saveRowButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		saveRowButton.addActionListener(e -> saveRow());
 
+		JPopupMenu export = new JPopupMenu(EXPORT_TO_EXCEL);
+		export.setVisible(true);
+		createExportItems(export);
+
 		gbs.gridx = 0;
 		gbs.gridy = 0;
 		gbs.gridwidth = 1;
@@ -137,9 +154,41 @@ public class BasicGrid extends AbstractGrid {
 		gbs.gridy = 0;
 		gbs.gridwidth = 1;
 		buttonLayout.add(saveRowButton, gbs);
+
+		gbs.gridx = 3;
+		gbs.gridy = 0;
+		gbs.gridwidth = 1;
+		buttonLayout.add(export, gbs);
+
 		buttonLayout.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		return buttonLayout;
+	}
+
+	private void createExportItems(JPopupMenu export) {
+
+		JMenuItem excelExport = new JMenuItem("Excel");
+		excelExport.addActionListener(e -> exportToExcel());
+
+		export.add(excelExport);
+	}
+
+	private void exportToExcel() {
+
+		ExcelUtils excelUtils = new ExcelUtils();
+		byte[] excel = excelUtils.exportToByteArray(rowsToMatrix());
+
+		JFileChooser fileChooser = new JFileChooser();
+		int retrival = fileChooser.showSaveDialog(null);
+		if (retrival == JFileChooser.APPROVE_OPTION) {
+			try {
+				Files.write(excel, new File(fileChooser.getSelectedFile() + ".xlsx"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private void addRow() {
