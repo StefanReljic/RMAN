@@ -8,5 +8,6 @@ public class AddRowView extends JDialog {
 
 	public AddRowView(Map<String, Class<?>> columns) {
 
+		
 	}
 }

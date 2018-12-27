@@ -21,16 +21,19 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 
 import com.google.common.io.Files;
 
 import interfaces.ServiceInterface;
 import meta.model.MetaDescription;
 import meta.model.MetaEntity;
+import model.Item;
 import model.Row;
 import services.OracleService;
 import utils.ExcelUtils;
-import views.AddRowView;
 import views.MainView;
 
 public class BasicGrid extends AbstractGrid {
@@ -41,10 +44,17 @@ public class BasicGrid extends AbstractGrid {
 	private static final String BASIC_GRID_SAVE = "Save";
 	private static final String EXPORT_TO_EXCEL = "Export";
 
-	public BasicGrid(List<Row> rows) {
+	private List<Integer> addedRowsIndexes;
+	private String entityName;
+	private List<String> keys;
+
+	public BasicGrid(String entityName, List<Row> rows) {
 
 		if (rows == null || rows.size() == 0)
 			return;
+
+		this.entityName = entityName;
+		this.keys = rows.get(0).getItems().keySet().stream().collect(Collectors.toList());
 
 		Object[] columnNames = rows.get(0).getItems().keySet().stream().collect(Collectors.toList()).toArray();
 		Object[][] objects = new Object[rows.size()][columnNames.length];
@@ -53,29 +63,18 @@ public class BasicGrid extends AbstractGrid {
 			for (int j = 0; j < columnNames.length; ++j)
 				objects[i][j] = rows.get(i).getItems().get(columnNames[j]).getValue();
 
-		this.grid = new JTable(objects, columnNames);
+		DefaultTableModel defaultTableModel = new DefaultTableModel();
+		for (Object columnName : columnNames)
+			defaultTableModel.addColumn(columnName);
+
+		for (Object[] row : objects)
+			defaultTableModel.addRow(row);
+
+		this.grid = new JTable(defaultTableModel);
 		this.rows = rows;
+		this.addedRowsIndexes = new LinkedList<Integer>();
 		createComponent();
 
-	}
-
-	@Override
-	protected Object[][] rowsToMatrix() {
-
-		if (rows == null || rows.size() == 0)
-			return null;
-
-		List<String> keys = rows.get(0).getItems().keySet().stream().collect(Collectors.toList());
-		Object[][] matrix = new Object[rows.size() + 1][keys.size()];
-
-		for (int j = 0; j < keys.size(); ++j)
-			matrix[0][j] = keys.get(j);
-
-		for (int i = 1; i < rows.size() + 1; ++i)
-			for (int j = 0; j < keys.size(); ++j)
-				matrix[i][j] = rows.get(i - 1).getItems().get(keys.get(j)).getValue();
-
-		return matrix;
 	}
 
 	@Override
@@ -172,36 +171,36 @@ public class BasicGrid extends AbstractGrid {
 		export.add(excelExport);
 	}
 
-	private void exportToExcel() {
-
-		ExcelUtils excelUtils = new ExcelUtils();
-		byte[] excel = excelUtils.exportToByteArray(rowsToMatrix());
-
-		JFileChooser fileChooser = new JFileChooser();
-		int retrival = fileChooser.showSaveDialog(null);
-		if (retrival == JFileChooser.APPROVE_OPTION) {
-			try {
-				Files.write(excel, new File(fileChooser.getSelectedFile() + ".xlsx"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-
 	private void addRow() {
 
-		AddRowView addRowView = new AddRowView(rows.get(0).getColumnTypes());
-		addRowView.setVisible(true);
+		DefaultTableModel model = (DefaultTableModel) grid.getModel();
+		Object[] nullObjects = new Object[model.getColumnCount()];
+		for (Object obj : nullObjects)
+			obj = "";
+
+		model.addRow(nullObjects);
+		addedRowsIndexes.add(model.getRowCount());
+		addedRowsIndexes = addedRowsIndexes.stream().sorted().collect(Collectors.toList());
 	}
 
 	private void deleteRow() {
 
-		int[] rowIds = grid.getSelectedRows();
+		int[] rowIndexesArray = grid.getSelectedRows();
+
+		if (rowIndexesArray.length == 0)
+			return;
+
+		List<Integer> rowIndexesForDelete = new LinkedList<Integer>();
+		for (int i = 0; i < rowIndexesArray.length; ++i)
+			if (!addedRowsIndexes.contains(rowIndexesArray[i] + 1))
+				rowIndexesForDelete.add(rowIndexesArray[i]);
+
+		if (rowIndexesForDelete.isEmpty())
+			return;
+
 		List<Row> rowsForDelete = new LinkedList<Row>();
-		for (int i = 0; i < rowIds.length; ++i)
-			rowsForDelete.add(getRows().get(rowIds[i]));
+		for (int i = 0; i < rowIndexesForDelete.size(); ++i)
+			rowsForDelete.add(getRows().get(rowIndexesForDelete.get(i)));
 
 		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 		MetaDescription metaDescription = MetaDescription.deserialize((byte[]) MainView.getMetaDescription().getValue());
@@ -217,5 +216,89 @@ public class BasicGrid extends AbstractGrid {
 
 	private void saveRow() {
 
+		if (addedRowsIndexes.size() == 0)
+			return;
+
+		List<Row> rowsForSave = new LinkedList<Row>();
+		DefaultTableModel defaultTableModel = (DefaultTableModel) grid.getModel();
+		int numberOfColumns = defaultTableModel.getColumnCount();
+
+		for (Integer i : addedRowsIndexes) {
+
+			int counter = 0;
+			for (int j = 0; j < numberOfColumns; ++j)
+				if (defaultTableModel.getValueAt(i - 1, j) != null && !defaultTableModel.getValueAt(i - 1, j).equals(""))
+					counter++;
+
+			if (counter == numberOfColumns) {
+
+				Row row = new Row();
+				row.setTableName(entityName);
+
+				for (int j = 0; j < numberOfColumns; ++j) {
+
+					Item item = new Item("", defaultTableModel.getValueAt(i - 1, j));
+					row.getItems().put(keys.get(j), item);
+				}
+				rowsForSave.add(row);
+				rows.add(row);
+			}
+		}
+
+		for (Row row : rows)
+			System.out.println(row);
+
+		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+
+		for (Row row : rowsForSave)
+			try {
+				serviceInterface.addObject(row);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		addedRowsIndexes.clear();
+		refreshGrid();
+	}
+
+	private void exportToExcel() {
+
+		ExcelUtils excelUtils = new ExcelUtils();
+		byte[] excel = excelUtils.exportToByteArray(rowsToMatrix());
+
+		JFileChooser fileChooser = new JFileChooser();
+		int retrival = fileChooser.showSaveDialog(null);
+		if (retrival == JFileChooser.APPROVE_OPTION) {
+			try {
+				Files.write(excel, new File(fileChooser.getSelectedFile() + ".xlsx"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	@Override
+	protected Object[][] rowsToMatrix() {
+
+		if (rows == null || rows.size() == 0)
+			return null;
+
+		List<String> keys = rows.get(0).getItems().keySet().stream().collect(Collectors.toList());
+		Object[][] matrix = new Object[rows.size() + 1][keys.size()];
+
+		for (int j = 0; j < keys.size(); ++j)
+			matrix[0][j] = keys.get(j);
+
+		for (int i = 1; i < rows.size() + 1; ++i)
+			for (int j = 0; j < keys.size(); ++j)
+				matrix[i][j] = rows.get(i - 1).getItems().get(keys.get(j)).getValue();
+
+		return matrix;
+	}
+
+	public String getEntityName() {
+		return entityName;
 	}
 }

@@ -15,6 +15,5 @@ public class AddResourceView extends JPanel {
 	public AddResourceView() {
 
 	}
-	
 
 }

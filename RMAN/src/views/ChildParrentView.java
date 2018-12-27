@@ -41,7 +41,7 @@ public class ChildParrentView extends JPanel {
 		List<String> columns = child.getMetaRow().getItems().keySet().stream().collect(Collectors.toList());
 		List<Row> rows = serviceInterface.readObjects(child.getEntityName(), columns, null);
 
-		BasicGrid childGrid = new BasicGrid(rows);
+		BasicGrid childGrid = new BasicGrid(child.getEntityName(), rows);
 
 		JPanel childPanel = new JPanel();
 		childPanel.setLayout(new BoxLayout(childPanel, BoxLayout.Y_AXIS));
@@ -68,7 +68,7 @@ public class ChildParrentView extends JPanel {
 		List<String> columns = parrent.getMetaRow().getItems().keySet().stream().collect(Collectors.toList());
 		List<Row> rows = serviceInterface.readObjects(parrent.getEntityName(), columns, null);
 
-		BasicGrid parrentGrid = new BasicGrid(rows);
+		BasicGrid parrentGrid = new BasicGrid(parrent.getEntityName(), rows);
 
 		parrentPanel.setLayout(new BoxLayout(parrentPanel, BoxLayout.Y_AXIS));
 		parrentPanel.add(new JLabel(PARRENT_TITLE + ": " + parrent.getEntityName()));
