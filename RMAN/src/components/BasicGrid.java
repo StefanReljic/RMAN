@@ -17,12 +17,11 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.google.common.io.Files;
@@ -42,7 +41,8 @@ public class BasicGrid extends AbstractGrid {
 	private static final String BASIC_GRID_ADD = "Add";
 	private static final String BASIC_GRID_REMOVE = "Remove";
 	private static final String BASIC_GRID_SAVE = "Save";
-	private static final String EXPORT_TO_EXCEL = "Export";
+	private static final String EXPORT = "Export";
+	private static final String EXPORT_TO_EXCEL = "Excel";
 
 	private List<Integer> addedRowsIndexes;
 	private String entityName;
@@ -105,13 +105,15 @@ public class BasicGrid extends AbstractGrid {
 			for (int j = 0; j < columnNames.length; ++j)
 				objects[i][j] = rows.get(i).getItems().get(columnNames[j]).getValue();
 
+		DefaultTableModel defaultTableModel = (DefaultTableModel) this.grid.getModel();
+
 		Component[] panelComponents = getComponents();
 		int i = 0;
 		for (i = 0; i < panelComponents.length; ++i)
 			if (panelComponents[i].equals(this.grid))
 				break;
 
-		this.grid = new JTable(objects, columnNames);
+		this.grid = new JTable(defaultTableModel);
 		remove(i);
 		add(this.grid, i);
 		updateUI();
@@ -134,10 +136,6 @@ public class BasicGrid extends AbstractGrid {
 		saveRowButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		saveRowButton.addActionListener(e -> saveRow());
 
-		JPopupMenu export = new JPopupMenu(EXPORT_TO_EXCEL);
-		export.setVisible(true);
-		createExportItems(export);
-
 		gbs.gridx = 0;
 		gbs.gridy = 0;
 		gbs.gridwidth = 1;
@@ -156,27 +154,19 @@ public class BasicGrid extends AbstractGrid {
 		gbs.gridx = 3;
 		gbs.gridy = 0;
 		gbs.gridwidth = 1;
-		buttonLayout.add(export, gbs);
+		buttonLayout.add(createExportMenu(), gbs);
 
 		buttonLayout.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 		return buttonLayout;
 	}
 
-	private void createExportItems(JPopupMenu export) {
-
-		JMenuItem excelExport = new JMenuItem("Excel");
-		excelExport.addActionListener(e -> exportToExcel());
-
-		export.add(excelExport);
-	}
-
 	private void addRow() {
 
 		DefaultTableModel model = (DefaultTableModel) grid.getModel();
 		Object[] nullObjects = new Object[model.getColumnCount()];
-		for (Object obj : nullObjects)
-			obj = "";
+		for (int i = 0; i < model.getColumnCount(); ++i)
+			nullObjects[i] = "";
 
 		model.addRow(nullObjects);
 		addedRowsIndexes.add(model.getRowCount());
@@ -219,6 +209,9 @@ public class BasicGrid extends AbstractGrid {
 		if (addedRowsIndexes.size() == 0)
 			return;
 
+		if (this.grid.isEditing())
+			this.grid.getCellEditor().stopCellEditing();
+
 		List<Row> rowsForSave = new LinkedList<Row>();
 		DefaultTableModel defaultTableModel = (DefaultTableModel) grid.getModel();
 		int numberOfColumns = defaultTableModel.getColumnCount();
@@ -236,17 +229,14 @@ public class BasicGrid extends AbstractGrid {
 				row.setTableName(entityName);
 
 				for (int j = 0; j < numberOfColumns; ++j) {
-
 					Item item = new Item("", defaultTableModel.getValueAt(i - 1, j));
 					row.getItems().put(keys.get(j), item);
 				}
+
 				rowsForSave.add(row);
 				rows.add(row);
 			}
 		}
-
-		for (Row row : rows)
-			System.out.println(row);
 
 		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
 
@@ -254,12 +244,25 @@ public class BasicGrid extends AbstractGrid {
 			try {
 				serviceInterface.addObject(row);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		addedRowsIndexes.clear();
 		refreshGrid();
+	}
+
+	private JMenuBar createExportMenu() {
+
+		JMenuBar menuBar = new JMenuBar();
+
+		JMenu export = new JMenu(EXPORT);
+		export.setVisible(true);
+		JMenuItem excelExport = new JMenuItem(EXPORT_TO_EXCEL);
+		excelExport.addActionListener(e -> exportToExcel());
+		export.add(excelExport);
+
+		menuBar.add(export);
+
+		return menuBar;
 	}
 
 	private void exportToExcel() {
