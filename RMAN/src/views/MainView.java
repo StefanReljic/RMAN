@@ -228,5 +228,4 @@ public class MainView extends JDialog {
 
 		return metaDescriptions.get(selectedIrName);
 	}
-
 }

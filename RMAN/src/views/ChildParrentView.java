@@ -79,5 +79,4 @@ public class ChildParrentView extends JPanel {
 	public void setParrentChildModel(ChildParrentModel parrentChildModel) {
 		this.parrentChildModel = parrentChildModel;
 	}
-
 }

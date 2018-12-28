@@ -265,5 +265,4 @@ public class LoginView extends Dialog {
 	public String getUsername() {
 		return usernameTextField.getText();
 	}
-
 }
