@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import application.Config;
 import components.MessageBox;
 import interfaces.ServiceInterface;
 import model.Item;
@@ -237,7 +238,8 @@ public class RegistrationView extends JDialog {
 		Row row = new Row();
 		Map<String, Item> items = new LinkedHashMap<String, Item>();
 
-		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		ServiceInterface serviceInterface = new OracleService(Config.getProperty("user"), Config.getProperty("password"), Config.getProperty("host"),
+				Integer.parseInt(Config.getProperty("port")), Config.getProperty("resourceId"));
 
 		List<String> idColumns = new LinkedList<String>();
 		idColumns.add("USER_SEQ.NEXTVAL");

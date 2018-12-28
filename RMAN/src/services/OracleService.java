@@ -216,7 +216,6 @@ public class OracleService extends AbstractService {
 
 		try (Connection connection = getConnection();) {
 			try (PreparedStatement statement = connection.prepareStatement(sql)) {
-
 				if (conditions != null) {
 					for (int i = 0; i < keys.size(); ++i) {
 						statement.setObject(i + 1, conditions.get(keys.get(i)));

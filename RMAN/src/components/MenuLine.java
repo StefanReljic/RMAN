@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import application.Config;
 import interfaces.ServiceInterface;
 import meta.converters.MetaDescriptionConverter;
 import meta.model.MetaDescription;
@@ -81,7 +82,8 @@ public class MenuLine extends JPanel {
 					messageBox.setVisible(true);
 				}
 
-				ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+				ServiceInterface serviceInterface = new OracleService(Config.getProperty("user"), Config.getProperty("password"), Config.getProperty("host"),
+						Integer.parseInt(Config.getProperty("port")), Config.getProperty("resourceId"));
 				List<String> idColumns = new LinkedList<String>();
 				idColumns.add("INFORMATION_RESOURCE_SEQ.NEXTVAL");
 				List<Row> rows = serviceInterface.readObjects("dual", idColumns, null);

@@ -31,7 +31,6 @@ import meta.model.MetaDescription;
 import meta.model.MetaEntity;
 import model.Item;
 import model.Row;
-import services.OracleService;
 import utils.ExcelUtils;
 import views.MainView;
 
@@ -87,10 +86,12 @@ public class BasicGrid extends AbstractGrid {
 		this.grid.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		this.grid.getTableHeader().setFont(new Font(Font.SANS_SERIF, Font.BOLD, 12));
 		this.grid.setSize(new Dimension(1000, 500));
+		this.grid.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		add(getButtonLayout(), BorderLayout.LINE_START);
 		add(this.grid.getTableHeader());
 		add(this.grid);
+
 	}
 
 	public void refreshGrid() {
@@ -105,7 +106,7 @@ public class BasicGrid extends AbstractGrid {
 			for (int j = 0; j < columnNames.length; ++j)
 				objects[i][j] = rows.get(i).getItems().get(columnNames[j]).getValue();
 
-		DefaultTableModel defaultTableModel = (DefaultTableModel) this.grid.getModel();
+		DefaultTableModel defaultTableModel = new DefaultTableModel(objects, columnNames);
 
 		Component[] panelComponents = getComponents();
 		int i = 0;
@@ -192,8 +193,8 @@ public class BasicGrid extends AbstractGrid {
 		for (int i = 0; i < rowIndexesForDelete.size(); ++i)
 			rowsForDelete.add(getRows().get(rowIndexesForDelete.get(i)));
 
-		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
-		MetaDescription metaDescription = MetaDescription.deserialize((byte[]) MainView.getMetaDescription().getValue());
+		ServiceInterface serviceInterface = MainView.selectedInterface;
+		MetaDescription metaDescription = MainView.getMetaDescription();
 		MetaEntity metaEntity = metaDescription.findMetaEntityByName(rowsForDelete.get(0).getTableName());
 		List<String> metaEntityIds = metaEntity.getMetaIds().keySet().stream().collect(Collectors.toList());
 
@@ -238,7 +239,7 @@ public class BasicGrid extends AbstractGrid {
 			}
 		}
 
-		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		ServiceInterface serviceInterface = MainView.selectedInterface;
 
 		for (Row row : rowsForSave)
 			try {

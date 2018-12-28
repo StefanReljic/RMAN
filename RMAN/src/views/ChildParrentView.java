@@ -15,7 +15,6 @@ import interfaces.ServiceInterface;
 import meta.model.ChildParrentModel;
 import meta.model.MetaEntity;
 import model.Row;
-import services.OracleService;
 
 public class ChildParrentView extends JPanel {
 
@@ -24,6 +23,7 @@ public class ChildParrentView extends JPanel {
 	private ChildParrentModel parrentChildModel;
 
 	private JTabbedPane parrentTabs;
+	private BasicGrid parrentGrid;
 
 	public ChildParrentView(ChildParrentModel parrentChildModel) {
 
@@ -37,12 +37,11 @@ public class ChildParrentView extends JPanel {
 			return;
 
 		MetaEntity child = this.parrentChildModel.getChild();
-		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		ServiceInterface serviceInterface = MainView.selectedInterface;
 		List<String> columns = child.getMetaRow().getItems().keySet().stream().collect(Collectors.toList());
 		List<Row> rows = serviceInterface.readObjects(child.getEntityName(), columns, null);
 
 		BasicGrid childGrid = new BasicGrid(child.getEntityName(), rows);
-
 		JPanel childPanel = new JPanel();
 		childPanel.setLayout(new BoxLayout(childPanel, BoxLayout.Y_AXIS));
 		childPanel.add(new JLabel(CHILD_TITLE + ": " + child.getEntityName()));
@@ -50,26 +49,22 @@ public class ChildParrentView extends JPanel {
 
 		if (parrentChildModel.getParrents().size() != 0) {
 			this.parrentTabs = new JTabbedPane();
-
 			for (MetaEntity metaEntity : parrentChildModel.getParrents())
 				this.parrentTabs.addTab(metaEntity.getEntityName(), makeParrentView(metaEntity));
-
 			parrentTabs.setSelectedIndex(0);
 		}
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, childPanel, parrentTabs);
 		add(splitPane);
+
 	}
 
 	private Component makeParrentView(MetaEntity parrent) {
 
 		JPanel parrentPanel = new JPanel();
-
-		ServiceInterface serviceInterface = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		ServiceInterface serviceInterface = MainView.selectedInterface;
 		List<String> columns = parrent.getMetaRow().getItems().keySet().stream().collect(Collectors.toList());
 		List<Row> rows = serviceInterface.readObjects(parrent.getEntityName(), columns, null);
-
-		BasicGrid parrentGrid = new BasicGrid(parrent.getEntityName(), rows);
-
+		parrentGrid = new BasicGrid(parrent.getEntityName(), rows);
 		parrentPanel.setLayout(new BoxLayout(parrentPanel, BoxLayout.Y_AXIS));
 		parrentPanel.add(new JLabel(PARRENT_TITLE + ": " + parrent.getEntityName()));
 		parrentPanel.add(parrentGrid);

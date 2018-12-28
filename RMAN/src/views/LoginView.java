@@ -25,6 +25,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import application.Config;
 import interfaces.ServiceInterface;
 import model.Row;
 import services.OracleService;
@@ -224,7 +225,8 @@ public class LoginView extends Dialog {
 		String username = usernameTextField.getText();
 		String password = new String(passwordTextField.getPassword());
 
-		ServiceInterface oracleService = new OracleService("rman", "rman", "localhost", 1521, "testdb");
+		ServiceInterface oracleService = new OracleService(Config.getProperty("user"), Config.getProperty("password"), Config.getProperty("host"),
+				Integer.parseInt(Config.getProperty("port")), Config.getProperty("resourceId"));
 
 		Map<String, Object> objects = new LinkedHashMap<String, Object>();
 		objects.put("username", username);
