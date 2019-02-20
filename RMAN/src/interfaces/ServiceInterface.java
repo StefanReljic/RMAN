@@ -9,6 +9,8 @@ import model.Row;
 
 public interface ServiceInterface {
 
+	public boolean validateAutomaticResourceViewInputFields(String user, String password, String host, Integer port, String service);
+
 	public void addObject(Row object) throws Exception;
 
 	public void deleteObject(Row object, List<String> columns);

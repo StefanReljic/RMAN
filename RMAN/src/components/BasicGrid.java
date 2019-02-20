@@ -43,9 +43,12 @@ public class BasicGrid extends AbstractGrid {
 	private static final String EXPORT = "Export";
 	private static final String EXPORT_TO_EXCEL = "Excel";
 
-	private List<Integer> addedRowsIndexes;
-	private String entityName;
-	private List<String> keys;
+	protected List<Integer> addedRowsIndexes;
+	protected String entityName;
+	protected List<String> keys;
+	protected JButton addRowButton;
+	protected JButton deleteRowButton;
+	protected JButton saveRowButton;
 
 	public BasicGrid(String entityName, List<Row> rows) {
 
@@ -120,20 +123,20 @@ public class BasicGrid extends AbstractGrid {
 		updateUI();
 	}
 
-	private Component getButtonLayout() {
+	protected Component getButtonLayout() {
 
 		JPanel buttonLayout = new JPanel(new GridBagLayout());
 		GridBagConstraints gbs = new GridBagConstraints();
 
-		JButton addRowButton = new JButton(BASIC_GRID_ADD);
+		addRowButton = new JButton(BASIC_GRID_ADD);
 		addRowButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		addRowButton.addActionListener(e -> addRow());
 
-		JButton deleteRowButton = new JButton(BASIC_GRID_REMOVE);
+		deleteRowButton = new JButton(BASIC_GRID_REMOVE);
 		deleteRowButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		deleteRowButton.addActionListener(e -> deleteRow());
 
-		JButton saveRowButton = new JButton(BASIC_GRID_SAVE);
+		saveRowButton = new JButton(BASIC_GRID_SAVE);
 		saveRowButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10));
 		saveRowButton.addActionListener(e -> saveRow());
 
@@ -162,7 +165,7 @@ public class BasicGrid extends AbstractGrid {
 		return buttonLayout;
 	}
 
-	private void addRow() {
+	protected void addRow() {
 
 		DefaultTableModel model = (DefaultTableModel) grid.getModel();
 		Object[] nullObjects = new Object[model.getColumnCount()];
@@ -174,7 +177,7 @@ public class BasicGrid extends AbstractGrid {
 		addedRowsIndexes = addedRowsIndexes.stream().sorted().collect(Collectors.toList());
 	}
 
-	private void deleteRow() {
+	protected void deleteRow() {
 
 		int[] rowIndexesArray = grid.getSelectedRows();
 
@@ -205,7 +208,7 @@ public class BasicGrid extends AbstractGrid {
 		refreshGrid();
 	}
 
-	private void saveRow() {
+	protected void saveRow() {
 
 		if (addedRowsIndexes.size() == 0)
 			return;
@@ -251,7 +254,7 @@ public class BasicGrid extends AbstractGrid {
 		refreshGrid();
 	}
 
-	private JMenuBar createExportMenu() {
+	protected JMenuBar createExportMenu() {
 
 		JMenuBar menuBar = new JMenuBar();
 
@@ -266,7 +269,7 @@ public class BasicGrid extends AbstractGrid {
 		return menuBar;
 	}
 
-	private void exportToExcel() {
+	protected void exportToExcel() {
 
 		ExcelUtils excelUtils = new ExcelUtils();
 		byte[] excel = excelUtils.exportToByteArray(rowsToMatrix());

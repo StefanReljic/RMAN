@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import java.awt.CardLayout;
 
 import views.LoginView;
+import views.resource.AddResourceView;
 
 public class Application {
 
@@ -25,11 +26,13 @@ public class Application {
 					Application window = new Application();
 					window.frmRman.setVisible(false);
 
+					
 					JFrame frame = new JFrame(LOGIN);
 					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-					LoginView dialog = new LoginView(frame);
-					dialog.setVisible(true);
-
+//					LoginView dialog = new LoginView(frame);
+//					dialog.setVisible(true);
+					AddResourceView arv = new AddResourceView(frame);
+					arv.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

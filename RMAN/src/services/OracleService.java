@@ -1,20 +1,29 @@
 package services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.swing.JFrame;
+
 import org.apache.poi.util.IOUtils;
 
+import application.Config;
+import components.MessageBox;
+import interfaces.ServiceInterface;
 import meta.model.MetaDescription;
 import meta.model.MetaEntity;
 import meta.model.MetaInfo;
@@ -37,6 +46,7 @@ public class OracleService extends AbstractService {
 	private static final String SQL_READ_PRIMARY_KEYS = "select ucc.table_name, ucc.column_name from user_cons_columns ucc "
 			+ "join user_constraints uc on ucc.constraint_name = uc.constraint_name where constraint_type='P' order by table_name";
 
+	public static final String CANNOT_ADD_INFORMATION_RESOURCE_MESSAGE = "Cannot add information resource";
 	private String user;
 	private String password;
 	private String host;
@@ -94,6 +104,28 @@ public class OracleService extends AbstractService {
 
 	public void setServiceId(String serviceId) {
 		this.serviceId = serviceId;
+	}
+
+	public boolean validateAutomaticResourceViewInputFields(String user, String password, String host, Integer port, String service) {
+
+		boolean result = true;
+
+		if (user == null || user.equals(""))
+			result = false;
+
+		if (password == null || password.equals(""))
+			result = false;
+
+		if (host == null || host.equals(""))
+			result = false;
+
+		if (port == null)
+			result = false;
+
+		if (service == null || service.equals(""))
+			result = false;
+
+		return result;
 	}
 
 	@Override
@@ -429,4 +461,79 @@ public class OracleService extends AbstractService {
 
 		return null;
 	}
+
+	public static void addInformationResource(MetaDescription metaDescription) {
+
+		if (metaDescription != null) {
+
+			byte[] metaDescriptionBytes = null;
+			try {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				ObjectOutputStream out = new ObjectOutputStream(bos);
+
+				out.writeObject(metaDescription);
+				out.close();
+				metaDescriptionBytes = bos.toByteArray();
+				bos.close();
+			} catch (IOException ex) {
+				MessageBox messageBox = new MessageBox(new JFrame(), ex.getMessage());
+				messageBox.setVisible(true);
+			}
+
+			ServiceInterface serviceInterface = new OracleService(Config.getProperty("user"), Config.getProperty("password"),
+					Config.getProperty("host"), Integer.parseInt(Config.getProperty("port")), Config.getProperty("resourceId"));
+			List<String> idColumns = new LinkedList<String>();
+			idColumns.add("INFORMATION_RESOURCE_SEQ.NEXTVAL");
+			List<Row> rows = serviceInterface.readObjects("dual", idColumns, null);
+			BigDecimal nextId = (BigDecimal) rows.get(0).getItems().get("INFORMATION_RESOURCE_SEQ.NEXTVAL").getValue();
+
+			Row row = new Row();
+			row.setTableName("INFORMATION_RESOURCE");
+			Map<String, Item> items = new LinkedHashMap<String, Item>();
+
+			Item idItem = new Item("BigDecimal", nextId);
+			items.put("ID", idItem);
+
+			Item userItem = new Item("String", metaDescription.getMetaInfo().getUser());
+			items.put("CONN_USER", userItem);
+
+			Item passwordItem = new Item("String", metaDescription.getMetaInfo().getPassword());
+			items.put("CONN_PASSWORD", passwordItem);
+
+			Item hostItem = new Item("String", metaDescription.getMetaInfo().getHost());
+			items.put("HOST", hostItem);
+
+			Item portItem = new Item("int", metaDescription.getMetaInfo().getPort());
+			items.put("PORT", portItem);
+
+			Item resourceIdItem = new Item("String", metaDescription.getMetaInfo().getResourceId());
+			items.put("NAME", resourceIdItem);
+
+			Item metaDescriptionBytesItem = new Item("byte[]", metaDescriptionBytes);
+			items.put("META_DESCRIPTION", metaDescriptionBytesItem);
+
+			row.setItems(items);
+
+			Item uir_ir = new Item("BigDecimal", nextId);
+			Item uir_user = new Item("BigDecimal", 1);
+			Row uirRow = new Row();
+			Map<String, Item> uirItems = new LinkedHashMap<String, Item>();
+			uirItems.put("INFORMATION_RESOURCE_ID", uir_ir);
+			uirItems.put("USER_ID", uir_user);
+			uirRow.setItems(uirItems);
+			uirRow.setTableName("U_IR");
+
+			try {
+				serviceInterface.addObject(row);
+				serviceInterface.addObject(uirRow);
+			} catch (SQLException e1) {
+				MessageBox messageBox = new MessageBox(new JFrame(), CANNOT_ADD_INFORMATION_RESOURCE_MESSAGE);
+				messageBox.setVisible(true);
+				e1.printStackTrace();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+
 }
