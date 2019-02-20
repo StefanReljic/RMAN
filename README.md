@@ -1,2 +1,0 @@
-# RMAN
-Information Resource Manager
